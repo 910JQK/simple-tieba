@@ -1,6 +1,6 @@
 {
   "name": "simple-tieba",
-  "displayName": "貼吧",
+  "displayName": "极简贴吧",
   "version": "0.0.1",
   "description": "A simple third-party tieba client.",
   "main": "index.js",
