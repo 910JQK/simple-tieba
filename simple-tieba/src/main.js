@@ -1,20 +1,19 @@
 import Vue from 'vue'
-import VueMaterial from 'vue-material'
-import { JSDOM } from 'jsdom'
-import 'whatwg-fetch'
-
-import 'vue-material/dist/vue-material.min.css'
-import 'vue-material/dist/theme/default.css'
-import 'material-design-icons/iconfont/material-icons.css'
+import { MdApp, MdToolbar, MdContent, MdProgress } from 'vue-material/dist/components'
 
 import App from './App.vue'
 import router from './router'
 import Navigation from 'vue-navigation'
 
+import 'vue-material/dist/vue-material.min.css'
+import 'vue-material/dist/theme/default.css'
+import 'material-design-icons/iconfont/material-icons.css'
+
 
 Vue.config.productionTip = false
-Vue.use(VueMaterial)
 Vue.use(Navigation, { router })
+;[MdApp, MdToolbar, MdContent, MdProgress].forEach(c => Vue.use(c))
+
 
 var vm = new Vue({ router, render: h => h(App) })
 vm.$mount('#app')
