@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <input type="text" v-model="kw" />
-    <router-link v-bind:to="'/thread-list/'+kw">进吧</router-link>
+    <router-link v-bind:to="to">进吧</router-link>
   </div>
 </template>
 
@@ -13,6 +13,12 @@ export default {
     name: 'home',
     data: () => ({
         kw: 'linux'
-    })
+    }),
+    computed: {
+        to: function () {
+            let kw = encodeURIComponent(this.kw)
+            return `/thread-list/${kw}`
+        }
+    }
 }
 </script>

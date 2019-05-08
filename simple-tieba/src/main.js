@@ -18,3 +18,4 @@ Vue.use(Navigation, { router })
 var vm = new Vue({ router, render: h => h(App) })
 vm.$mount('#app')
 window.vm = vm
+

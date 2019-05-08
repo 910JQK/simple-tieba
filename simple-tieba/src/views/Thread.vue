@@ -22,6 +22,9 @@ export default {
     components: {
         Floor
     },
+    updated: function () {
+        set_title(this.title)
+    },
     mounted: function () {
         set_title('帖子内容')
         ;(async () => {
@@ -31,7 +34,8 @@ export default {
             let text = await res.text()
             let document = parse(text)
             let title = document.querySelector('.bc > strong').textContent
-            set_title(title)
+            this.title = title
+            set_title(title, this.$route.query.VNK)
             let floors = Array.from(document.querySelectorAll('.d > .i'))
             this.floors = floors.map(f => {
                 let author = f.querySelector('.g').textContent
@@ -51,9 +55,34 @@ export default {
                         let extract = child.href.match(/src=([^&]+)/)[1]
                         let real_src = decodeURIComponent(extract)
                         let img = window.document.createElement('img')
-                        img.src = real_src
                         img.className = 'display-image'
                         content.appendChild(img)
+                        ;(async () => {
+                            let res = await fetch(real_src)
+                            let blob = await res.blob()
+                            let url = URL.createObjectURL(blob)
+                            img.src = url
+                        })()
+                    } else if (typeof child.href == 'string' && child.href.startsWith('http://gate.baidu.com')) {
+                        let extract = child.href.match(/src=([^&]+)/)[1]
+                        let real_href = decodeURIComponent(extract)
+                        let match = real_href.match(/\/p\/([0-9]+)/)
+                        if (match != null) {
+                            let kz = match[1]
+                            let a = window.document.createElement('a')
+                            a.href = 'javascript:void(0)'
+                            a.onclick = () => {
+                                router.push({ name: 'thread', params: {kz} })
+                            }
+                            a.textContent = kz
+                            content.appendChild(a)
+                        } else {
+                            let a = window.document.createElement('a')
+                            a.href = real_href
+                            a.target = '_blank'
+                            a.textContent = real_href
+                            content.appendChild(a)
+                        }
                     } else {
                         content.appendChild(child)
                     }

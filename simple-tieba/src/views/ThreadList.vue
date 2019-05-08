@@ -18,6 +18,7 @@
             </li>
         </ul>
     </div>
+    <div style="display: none" ref="helper"></div>
   </div>
 </template>
 
@@ -29,14 +30,11 @@ import { parse, set_title } from '../tools'
 
 export default {
     name: 'thread-list',
-    beforeRouteEnter: function (f, t, next) {
-        next(vm => {
-            vm.kw && set_title(`${vm.kw} 吧`)
-        })
-    },
     mounted: function () {
         this.kw = this.$route.params.kw
-        set_title(`${this.kw} 吧`)
+        this.title = `${this.kw} 吧`
+        set_title(this.title, this.$route.query.VNK)
+        this.$refs.helper.onload = () => set_title(this.title)
         let kw = encodeURIComponent(this.kw)
         ;(async () => {
             let res = await fetch('http://tieba.baidu.com/mo/m?kw=' + kw)

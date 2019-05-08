@@ -6,7 +6,7 @@
             </md-app-toolbar>
             <md-app-content>
                 <navigation>
-                    <router-view/>
+                    <router-view :key="$route.fullPath" />
                 </navigation>
             </md-app-content>
         </md-app>
@@ -14,6 +14,17 @@
 </template>
 
 <script>
+import router from './router'
+import { recover_title } from './tools'
+
+export default {
+    created: function () {
+        router.beforeEach((t, f, next) => {
+            recover_title(t.query.VNK)
+            next()
+        })
+    }
+}
 </script>
 
 <style>
