@@ -1,17 +1,18 @@
 <template>
   <div class="home">
-    <router-link to="/thread-list">帖子列表</router-link>
+    <input type="text" v-model="kw" />
+    <router-link v-bind:to="'/thread-list/'+kw">进吧</router-link>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+// import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
-  name: 'home',
-  components: {
-    HelloWorld
-  }
+    name: 'home',
+    data: () => ({
+        kw: 'linux'
+    })
 }
 </script>

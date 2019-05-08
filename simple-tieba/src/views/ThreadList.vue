@@ -5,7 +5,7 @@
     </div>
     <div class="content" v-else >
         <ul class="list">
-            <li class="item" v-for="thread in threads" :key="thread.kz">
+            <li class="item" v-for="thread in threads" :key="thread.kz" v-on:click="goto_kz(thread.kz)">
                 <div class="reply_count md-headline">
                     <div>{{ thread.reply }}</div>
                 </div>
@@ -21,18 +21,27 @@
   </div>
 </template>
 
+
 <script>
-import { JSDOM } from 'jsdom'
 import 'whatwg-fetch'
+import router from '../router'
+import { parse, set_title } from '../tools'
 
 export default {
     name: 'thread-list',
-    created: function () {
-        (async () => {
-            let res = await fetch('http://tieba.baidu.com/mo/m?kw=linux')
+    beforeRouteEnter: function (f, t, next) {
+        next(vm => {
+            vm.kw && set_title(`${vm.kw} 吧`)
+        })
+    },
+    mounted: function () {
+        this.kw = this.$route.params.kw
+        set_title(`${this.kw} 吧`)
+        let kw = encodeURIComponent(this.kw)
+        ;(async () => {
+            let res = await fetch('http://tieba.baidu.com/mo/m?kw=' + kw)
             let text = await res.text()
-            let dom = new JSDOM(text)
-            let document = dom.window.document
+            let document = parse(text)
             let threads = Array.from(document.querySelectorAll('div.i'))
             console.log(threads.map(t => t.textContent.split(' ')))
             this.threads = threads.map(t => {
@@ -50,14 +59,21 @@ export default {
                 let reply = match1? match1[1]: 0
                 return { kz, title, flags, author, date, reply }
             })
-            console.log(this.threads)
+            // console.log(this.threads)
         })()
     },
     data: () => ({
-        threads: []
-    })
+        threads: [],
+        kw: null
+    }),
+    methods: {
+        goto_kz: function (kz) {
+            router.push({ name: 'thread', params: {kz} })
+        }
+    }
 }
 </script>
+
 
 <style>
 .content.loading {
@@ -75,13 +91,14 @@ export default {
     padding: 0;
 }
 .item {
-    margin: 1em 0px;
+    margin: 1em calc(50% - 50vw);
     padding: 1em 1em 1em 0em;
     border: 1px solid hsl(0, 0%, 75%);
     box-shadow: 0px 0px 5px hsla(0, 0%, 40%, 0.5);
     display: flex;
     align-items: center;
     overflow: hidden;
+    cursor: pointer;
 }
 .reply_count {
     box-sizing: border-box;
