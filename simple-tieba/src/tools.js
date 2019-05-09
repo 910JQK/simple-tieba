@@ -48,4 +48,64 @@ function display_image (net_url) {
 }
 
 
-export { parse, set_title, recover_title, display_image }
+function normalize_content (floor, push) {
+    let children = Array.from(floor.childNodes)
+    children.pop()
+    let first = children[0]
+    if (first && first.nodeValue) {
+        first.nodeValue = first.nodeValue.replace(/^[0-9]+楼\. /, '')
+    }
+    let last = children[children.length-1]
+    if (last && last.tagName == 'br') {
+        children.pop()
+    }
+    let prev = ''
+    for (let child of children) {
+        if (
+            child.querySelector
+            && child.querySelector('.BDE_Image') != null
+        ) {
+            let extract = child.href.match(/src=([^&]+)/)[1]
+            let real_src = decodeURIComponent(extract)
+            push(display_image(real_src))
+            prev = 'img'
+        } else if (
+            typeof child.href == 'string'
+            && child.href.startsWith('http://gate.baidu.com')
+        ) {
+            let extract = child.href.match(/src=([^&]+)/)[1]
+            let real_href = decodeURIComponent(extract)
+            let match = real_href.match(/\/p\/([0-9]+)/)
+            if (match != null) {
+                let kz = match[1]
+                let a = window.document.createElement('a')
+                a.href = 'javascript:void(0)'
+                a.onclick = () => {
+                    router.push({ name: 'thread', params: {kz} })
+                }
+                a.textContent = kz
+                push(a)
+            } else {
+                let a = window.document.createElement('a')
+                a.href = real_href
+                a.target = '_blank'
+                a.textContent = real_href
+                push(a)
+            }
+            prev = 'link'
+        } else if (child.className == 'reply_to') {
+            continue
+        } else if (child.nodeValue ==  '\u00a0') {
+            console.log('skip')
+            continue
+        } else if (child.tagName == 'br' && prev == 'img') {
+            continue
+        } else {
+            push(child)
+            prev = ''
+        }
+    }
+}
+
+
+export { parse, set_title, recover_title, normalize_content }

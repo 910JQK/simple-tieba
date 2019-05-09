@@ -31,7 +31,10 @@ export default {
 .md-app {
   height: 100vh;
 }
-* {
+:not(.selectable) {
     user-select: none;
+}
+* {
+    user-select: text;
 }
 </style>

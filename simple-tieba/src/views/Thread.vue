@@ -14,7 +14,7 @@
 <script>
 import 'whatwg-fetch'
 import router from '../router'
-import { parse, set_title, display_image } from '../tools'
+import { parse, set_title, normalize_content } from '../tools'
 import Floor from '@/components/Floor'
 
 export default {
@@ -53,38 +53,9 @@ export default {
                 }
                 let number = f.innerText.match(/^([0-9]+)楼/)[1]
                 let content = document.createElement('div')
-                content.className = 'thread-content'
-                let children = Array.from(f.childNodes)
-                children.pop()
-                for (let child of children) {
-                    if (child.querySelector && child.querySelector('.BDE_Image') != null) {
-                        let extract = child.href.match(/src=([^&]+)/)[1]
-                        let real_src = decodeURIComponent(extract)
-                        content.appendChild(display_image(real_src))
-                    } else if (typeof child.href == 'string' && child.href.startsWith('http://gate.baidu.com')) {
-                        let extract = child.href.match(/src=([^&]+)/)[1]
-                        let real_href = decodeURIComponent(extract)
-                        let match = real_href.match(/\/p\/([0-9]+)/)
-                        if (match != null) {
-                            let kz = match[1]
-                            let a = window.document.createElement('a')
-                            a.href = 'javascript:void(0)'
-                            a.onclick = () => {
-                                router.push({ name: 'thread', params: {kz} })
-                            }
-                            a.textContent = kz
-                            content.appendChild(a)
-                        } else {
-                            let a = window.document.createElement('a')
-                            a.href = real_href
-                            a.target = '_blank'
-                            a.textContent = real_href
-                            content.appendChild(a)
-                        }
-                    } else {
-                        content.appendChild(child)
-                    }
-                }
+                content.classList.add('thread-content')
+                content.classList.add('selectable')
+                normalize_content(f, c => content.appendChild(c))
                 return { pid, number, author, date, content }
             })
             console.log(this.floors)
@@ -98,4 +69,8 @@ export default {
 </script>
 
 <style>
+ul {
+    list-style: none;
+    padding: 0px;
+}
 </style>
