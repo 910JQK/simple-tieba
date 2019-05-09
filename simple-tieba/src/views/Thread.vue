@@ -14,7 +14,7 @@
 <script>
 import 'whatwg-fetch'
 import router from '../router'
-import { parse, set_title } from '../tools'
+import { parse, set_title, display_image } from '../tools'
 import Floor from '@/components/Floor'
 
 export default {
@@ -38,7 +38,13 @@ export default {
             set_title(title, this.$route.query.VNK)
             let floors = Array.from(document.querySelectorAll('.d > .i'))
             this.floors = floors.map(f => {
-                let author = f.querySelector('.g').textContent
+                let author_url = f.querySelector('.g > a').href
+                let match = author_url.match(/un=([^&]+)/)
+                let author = (
+                    match?
+                        decodeURIComponent(match[1]):
+                        f.querySelector('.g').textContent
+                )
                 let date = f.querySelector('.b').textContent
                 let r = f.querySelector('.r > a')
                 let pid = null
@@ -54,15 +60,7 @@ export default {
                     if (child.querySelector && child.querySelector('.BDE_Image') != null) {
                         let extract = child.href.match(/src=([^&]+)/)[1]
                         let real_src = decodeURIComponent(extract)
-                        let img = window.document.createElement('img')
-                        img.className = 'display-image'
-                        content.appendChild(img)
-                        ;(async () => {
-                            let res = await fetch(real_src)
-                            let blob = await res.blob()
-                            let url = URL.createObjectURL(blob)
-                            img.src = url
-                        })()
+                        content.appendChild(display_image(real_src))
                     } else if (typeof child.href == 'string' && child.href.startsWith('http://gate.baidu.com')) {
                         let extract = child.href.match(/src=([^&]+)/)[1]
                         let real_href = decodeURIComponent(extract)

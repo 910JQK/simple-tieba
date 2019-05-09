@@ -6,7 +6,7 @@
             </md-app-toolbar>
             <md-app-content>
                 <navigation>
-                    <router-view :key="$route.fullPath" />
+                    <router-view />
                 </navigation>
             </md-app-content>
         </md-app>

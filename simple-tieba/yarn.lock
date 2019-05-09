@@ -3246,6 +3246,11 @@ gauge@~2.7.3:
     strip-ansi "^3.0.1"
     wide-align "^1.1.0"
 
+gbk.js@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/gbk.js/-/gbk.js-0.2.4.tgz#45b609764347c63e4473214adf74cd5359027c8e"
+  integrity sha512-WsTPt31seMy5q3VuF1BP1sUopJPBiOAv6u30hE+yoyAgi0QgX7KpH9SxidyYTGTwisF+qhK3TR3+ckEwLbimPw==
+
 get-caller-file@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-1.0.3.tgz#f978fa4c90d1dfe7ff2d6beda2a515e713bdcf4a"

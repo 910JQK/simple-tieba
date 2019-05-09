@@ -1,3 +1,6 @@
+import Loading from '@/assets/img-loading.gif'
+
+
 var Title = {}
 
 
@@ -24,4 +27,25 @@ function recover_title (key) {
 }
 
 
-export { parse, set_title, recover_title }
+function display_image (net_url) {
+    let div = window.document.createElement('div')
+    div.classList.add('display-image')
+    div.classList.add('loading')
+    let img = window.document.createElement('img')
+    img.src = Loading
+    div.appendChild(img)
+    ;(async () => {
+        let res = await fetch(net_url, {
+            referrerPolicy: 'no-referrer'
+            //referrer: `http://tieba.baidu.com/p/${kz}`
+        })
+        let blob = await res.blob()
+        let url = URL.createObjectURL(blob)
+        img.src = url
+        div.classList.remove('loading')
+    })()
+    return div
+}
+
+
+export { parse, set_title, recover_title, display_image }
