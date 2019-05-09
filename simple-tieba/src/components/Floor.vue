@@ -33,7 +33,7 @@ export default {
             let username = GBK.URI.encodeURIComponent(this.data.author)
             ;(async () => {
                 let res = await fetch(
-                    `http://tieba.baidu.com/i/sys/user_json?un=${username}`
+                    `https://tieba.baidu.com/i/sys/user_json?un=${username}`
                 )
                 let json = await res.json()
                 this.portrait = json.creator.portrait || null

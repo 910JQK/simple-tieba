@@ -30,7 +30,7 @@ export default {
         ;(async () => {
             this.kz = this.$route.params.kz
             let kz = encodeURIComponent(this.kz)
-            let res = await fetch('http://tieba.baidu.com/mo/m?kz=' + kz)
+            let res = await fetch('https://tieba.baidu.com/mo/m?kz=' + kz)
             let text = await res.text()
             let document = parse(text)
             let title = document.querySelector('.bc > strong').textContent

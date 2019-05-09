@@ -37,7 +37,7 @@ export default {
         this.$refs.helper.onload = () => set_title(this.title)
         let kw = encodeURIComponent(this.kw)
         ;(async () => {
-            let res = await fetch('http://tieba.baidu.com/mo/m?kw=' + kw)
+            let res = await fetch('https://tieba.baidu.com/mo/m?kw=' + kw)
             let text = await res.text()
             let document = parse(text)
             let threads = Array.from(document.querySelectorAll('div.i'))
