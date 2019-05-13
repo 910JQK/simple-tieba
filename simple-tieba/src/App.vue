@@ -15,13 +15,19 @@
 
 <script>
 import router from './router'
-import { recover_title } from './tools'
+import { recover_title, save_scroll, restore_scroll } from './tools'
 
 export default {
     created: function () {
         router.beforeEach((t, f, next) => {
             recover_title(t.query.VNK)
+            save_scroll(f.query.VNK)
             next()
+        })
+        router.afterEach((t, f) => {
+            setTimeout(() => {
+                restore_scroll(t.query.VNK)
+            }, 0)
         })
     }
 }

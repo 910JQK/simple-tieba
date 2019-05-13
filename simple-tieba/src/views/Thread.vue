@@ -13,9 +13,9 @@
 
 <script>
 import 'whatwg-fetch'
-import router from '../router'
 import { parse, set_title, normalize_content } from '../tools'
 import Floor from '@/components/Floor'
+import Loading from '@/assets/img-loading.gif'
 
 export default {
     name: 'thread',
@@ -52,10 +52,40 @@ export default {
                     pid = r.href.match('pid=([0-9]+)')[1]
                 }
                 let number = f.innerText.match(/^([0-9]+)楼/)[1]
-                let content = document.createElement('div')
+                let need_expand = false
+                let expand_pn = '0'
+                ;(() => {
+                    for (let a of f.querySelectorAll('a')) {
+                        if (a.textContent == '下一段') {
+                            let m = a.href.match(/pn=([0-9]+)/)
+                            if (m != null) {
+                                need_expand = true
+                                expand_pn = m[1]
+                            }
+                        }
+                    }
+                })()
+                let content = window.document.createElement('div')
                 content.classList.add('thread-content')
                 content.classList.add('selectable')
-                normalize_content(f, c => content.appendChild(c))
+                if (need_expand) {
+                    let placeholder = window.document.createElement('div')
+                    placeholder.style.textAlign = 'center'
+                    let img = window.document.createElement('img')
+                    img.src = Loading
+                    placeholder.appendChild(img)
+                    content.appendChild(placeholder)
+                    ;(async () => {
+                        let res = await fetch(`https://tieba.baidu.com/mo/m?kz=${kz}&pn=${expand_pn}&global=1&expand=${number}`)
+                        let text = await res.text()
+                        let doc = parse(text)
+                        let f = doc.querySelector('div.i')
+                        content.removeChild(placeholder)
+                        normalize_content(f, c => content.appendChild(c))
+                    })()
+                } else {
+                    normalize_content(f, c => content.appendChild(c))
+                }
                 return { pid, number, author, date, content }
             })
             console.log(this.floors)

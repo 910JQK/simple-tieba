@@ -1,7 +1,10 @@
+import 'whatwg-fetch'
+import router from './router'
 import Loading from '@/assets/img-loading.gif'
 
 
 var Title = {}
+var Scroll = {}
 
 
 function parse (xml_text) {
@@ -23,6 +26,24 @@ function set_title (text, key) {
 function recover_title (key) {
     if (Title[key]) {
         set_title(Title[key])
+    }
+}
+
+
+function save_scroll (key) {
+    let view = window.document.querySelector('.md-app-scroller')
+    if (view != null) {
+        Scroll[key] = view.scrollTop
+    }
+}
+
+
+function restore_scroll (key) {
+    if (Scroll[key]) {
+        let view = window.document.querySelector('.md-app-scroller')
+        if (view != null) {
+            view.scrollTop = Scroll[key]
+        }
     }
 }
 
@@ -90,6 +111,20 @@ function normalize_content (floor, push) {
                 a.href = real_href
                 a.target = '_blank'
                 a.textContent = real_href
+                a.addEventListener('click', ev => {
+                    ev.preventDefault()
+                    try {
+                        cordova.InAppBrowser.open (
+                            ev.target.href,
+                            '_system',
+                            'location=yes'
+                        );
+                    } catch (e) {
+                        console.log (
+                            'failed to open link by cordova-plugin-inappbrowser'
+                        )
+                    }
+                })
                 push(a)
             }
             prev = 'link'
@@ -108,4 +143,6 @@ function normalize_content (floor, push) {
 }
 
 
-export { parse, set_title, recover_title, normalize_content }
+export {
+    parse, set_title, recover_title, save_scroll, restore_scroll, normalize_content
+}

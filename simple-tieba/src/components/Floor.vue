@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import 'whatwg-fetch'
 import GBK from 'gbk.js'
 
 export default {
