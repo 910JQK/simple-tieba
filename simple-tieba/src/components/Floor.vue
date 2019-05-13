@@ -16,16 +16,22 @@
             </div>
         </div>
         <div class="wrapper md-subheading" ref="wrapper"></div>
+        <template v-if="data.pid != null && data.reply > 0">
+            <embbeded v-bind:pid="data.pid" v-bind:kz="data.kz">
+            </embbeded>
+        </template>
     </div>
 </template>
 
 <script>
 import 'whatwg-fetch'
 import GBK from 'gbk.js'
+import Embbeded from '@/components/Embbeded'
 
 export default {
     name: 'floor',
     props: ['data'],
+    components: { Embbeded },
     mounted: function () {
         this.$refs.wrapper.appendChild(this.data.content)
     },

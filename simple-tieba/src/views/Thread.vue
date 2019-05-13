@@ -19,9 +19,7 @@ import Loading from '@/assets/img-loading.gif'
 
 export default {
     name: 'thread',
-    components: {
-        Floor
-    },
+    components: { Floor },
     updated: function () {
         set_title(this.title)
     },
@@ -29,7 +27,7 @@ export default {
         set_title('帖子内容')
         ;(async () => {
             this.kz = this.$route.params.kz
-            let kz = encodeURIComponent(this.kz)
+            let kz = this.kz
             let res = await fetch('https://tieba.baidu.com/mo/m?kz=' + kz)
             let text = await res.text()
             let document = parse(text)
@@ -46,12 +44,17 @@ export default {
                         f.querySelector('.g').textContent
                 )
                 let date = f.querySelector('.b').textContent
-                let r = f.querySelector('.r > a')
+                let number = f.innerText.match(/^([0-9]+)楼/)[1]
                 let pid = null
+                let reply = 0
+                let r = f.querySelector('a.reply_to')
                 if (r != null) {
                     pid = r.href.match('pid=([0-9]+)')[1]
+                    let r_match = r.textContent.match(/\(([0-9]+)\)$/)
+                    if (r_match != null) {
+                        reply = parseInt(r_match[1])
+                    }
                 }
-                let number = f.innerText.match(/^([0-9]+)楼/)[1]
                 let need_expand = false
                 let expand_pn = '0'
                 ;(() => {
@@ -86,7 +89,7 @@ export default {
                 } else {
                     normalize_content(f, c => content.appendChild(c))
                 }
-                return { pid, number, author, date, content }
+                return { kz, pid, reply, number, author, date, content }
             })
             console.log(this.floors)
         })()
