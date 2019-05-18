@@ -128,6 +128,12 @@ function normalize_content (floor, push) {
             push(display_image(real_src))
             prev = 'img'
         } else if (
+            child.tagName == 'img'
+            && child.src.startsWith('http://tb2.bdstatic.com/tb/editor/images/')
+        ) {
+            child.className = 'emoticon'
+            push(child)
+        } else if (
             typeof child.href == 'string'
             && child.href.startsWith('http://gate.baidu.com')
         ) {
@@ -150,24 +156,73 @@ function normalize_content (floor, push) {
 
 function normalize_finf_content (finf, push) {
     let children = Array.from(finf.childNodes)
+    let first = children[0]
+    if (first && first.textContent.match(/^回复 ?/) != null) {
+        children.shift()
+    }
     let end = finf.querySelector('br+a')
+    let prev = ''
     for (let child of children) {
         if (
+            child.tagName == 'img'
+            && child.src.startsWith('http://tb2.bdstatic.com/tb/editor/images/')
+        ) {
+            child.className = 'emoticon'
+            push(child)
+        } else if (
             typeof child.href == 'string'
             && child.href.startsWith('http://gate.baidu.com')
         ) {
             normalize_link(child, push)
+            prev = 'link'
+        } else if (
+            prev == 'reply' && child.nodeValue
+            && child.nodeValue.match(/^ :/) != null
+        ) {
+            child.nodeValue = child.nodeValue.replace(/^ :/, '')
+            push(child)
         } else if (child.tagName == 'br') {
             continue
         } else if (child === end) {
             break
+        } else if (
+            typeof child.href == 'string'
+            && child.href.match(/\/i\?un=/) != null
+        ) {
+            let id_raw = child.href.match(/\/i\?un=(.*)/)[1]
+            let id = decodeURIComponent(id_raw)
+            child.href = 'javascript:void(0)'  // TODO: profile page
+            child.className = 'finf-reply'
+            child.style.color = get_color(child.textContent)
+            child.textContent = `@${id}`
+            push(child)
+            prev = 'reply'
         } else {
             push(child)
+            prev = ''
         }
     }
 }
 
 
+function get_color (string) {
+    let M = 359
+    let x = 1237
+    let y = 1759
+    let z = 2333
+    for (let rune of string) {
+        let t = rune.codePointAt(0)
+        y = (((y + t*7) % M)*t + x) % M
+        z = (((z + t*11) % M)*t + y) % M
+        x = (((x + t*13) % M)*t + z) % M
+    }
+    let H = x % 359
+    let S = 60 + y % 37
+    let L = 20 + z % 13
+    return `hsl(${H}, ${S}%, ${L}%)`
+}
+
+
 export {
-    parse, set_title, recover_title, save_scroll, restore_scroll, normalize_content, normalize_finf_content
+    parse, set_title, recover_title, save_scroll, restore_scroll, normalize_content, normalize_finf_content, get_color
 }

@@ -1,7 +1,7 @@
 <template>
     <div class="embbeded">
         <template v-if="items.length > 0">
-            <floor-in-floor v-for="item in items" :data="item" :key="item.key">
+            <floor-in-floor v-for="item in items" :data="item" :key="item.index">
             </floor-in-floor>
         </template>
         <template v-else >
@@ -33,14 +33,14 @@ export default {
             let text = await res.text()
             let document = parse(text)
             let raw_items = Array.from(document.querySelectorAll('div.i'))
-            let items = raw_items.map(item => {
+            let items = raw_items.map((item, index) => {
                 let date = item.querySelector('.b').textContent
                 let author = item.querySelector('br+a').textContent
                 let content = window.document.createElement('div')
                 content.classList.add('finf-content')
                 content.classList.add('selectable')
                 normalize_finf_content(item, c => content.appendChild(c))
-                return { author, date, content, key: Math.random() }
+                return { author, date, content, index }
             })
             this.items = items
         })()
@@ -54,8 +54,8 @@ export default {
 
 <style>
 .embbeded {
-    margin: 0px 5%;
-    padding: 0.5em 1em;
-    background-color: hsla(0, 0%, 80%, 0.3);
+    margin: 0px 0px;
+    border: 1px solid hsla(0, 0%, 70%, 0.5);
+    background-color: hsla(0, 0%, 90%, 0.3);
 }
 </style>

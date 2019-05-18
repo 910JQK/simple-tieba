@@ -7,7 +7,9 @@
                     <template v-else>{{ data.author[0] }}</template>
                 </md-avatar>
                 <span class="header-info">
-                    <span class="author">{{ data.author }}</span>
+                    <span class="author" :style="{ color: get_color(data.author) }">
+                        {{ data.author }}
+                    </span>
                     <span class="date">{{ data.date }}</span>
                 </span>
             </div>
@@ -27,6 +29,7 @@
 import 'whatwg-fetch'
 import GBK from 'gbk.js'
 import Embbeded from '@/components/Embbeded'
+import { get_color } from '@/tools'
 
 export default {
     name: 'floor',
@@ -56,14 +59,15 @@ export default {
                 `http://tb.himg.baidu.com/sys/portrait/item/${this.portrait}`
             )
         }
-    }
+    },
+    methods: { get_color }
 }
 </script>
 
 <style>
 .floor {
     border-top: 1px solid hsl(0, 0%, 75%);
-    padding: 1.5em 0px;
+    padding: 1.5rem 0px;
 }
 .header {
     display: flex;
@@ -89,15 +93,15 @@ export default {
 .date {
     color: hsl(0, 0%, 40%);
 }
-.wrapper {
-    padding: 1em 1.25em;
+.thread-content {
+    padding: 1rem 0.85rem;
 }
 .display-image {
-    margin: 1.25em 0em;
+    margin: 1.25rem 0rem;
 }
 .display-image > img {
     display: block;
-    margin: 0em auto;
+    margin: 0rem auto;
     max-width: 90%;
 }
 .display-image:not(.loading) > img {
@@ -106,5 +110,8 @@ export default {
 }
 .display-image.loading > img {
     width: 64px;
+}
+.emoticon {
+    margin: 0rem 0.25rem;
 }
 </style>

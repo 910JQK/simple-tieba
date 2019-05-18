@@ -25,8 +25,8 @@
 
 <script>
 import 'whatwg-fetch'
-import router from '../router'
-import { parse, set_title } from '../tools'
+import router from '@/router'
+import { parse, set_title } from '@/tools'
 
 export default {
     name: 'thread-list',

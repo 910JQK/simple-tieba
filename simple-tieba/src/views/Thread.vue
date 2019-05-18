@@ -13,7 +13,7 @@
 
 <script>
 import 'whatwg-fetch'
-import { parse, set_title, normalize_content } from '../tools'
+import { parse, set_title, normalize_content } from '@/tools'
 import Floor from '@/components/Floor'
 import Loading from '@/assets/img-loading.gif'
 
