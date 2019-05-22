@@ -3,16 +3,28 @@ import router from './router'
 import Loading from '@/assets/img-loading.gif'
 
 
-var Title = {}
-var Scroll = {}
-var ScrollCallback = null
+var Title = {}   // Map<VNK, page_title>
+var Scroll = {}   // Map<VNK, scroll_top>
+var ScrollCallback = null   // null | Function
 
 
+/**
+ *  Parse XML WAP page
+ *  
+ *  @param xml_text String
+ *  @return Document
+ */
 function parse (xml_text) {
     return (new DOMParser()).parseFromString(xml_text, 'application/xml')
 }
 
 
+/**
+ *  Set the text of title bar 
+ * 
+ *  @param text String
+ *  @param key Maybe(VNK)
+ */
 function set_title (text, key) {
     let title_bar = document.querySelector('#title')
     if (title_bar) {
@@ -24,6 +36,11 @@ function set_title (text, key) {
 }
 
 
+/**
+ *  Recover title text by VNK
+ *  
+ *  @param key VNK
+ */
 function recover_title (key) {
     if (Title[key]) {
         set_title(Title[key])
@@ -31,6 +48,11 @@ function recover_title (key) {
 }
 
 
+/**
+ *  Save the current scroll position
+ * 
+ *  @param key VNK
+ */
 function save_scroll (key) {
     let view = window.document.querySelector('.md-app-scroller')
     if (view != null) {
@@ -39,6 +61,11 @@ function save_scroll (key) {
 }
 
 
+/**
+ *  Restore scroll position by VNK
+ * 
+ *  @param key VNK
+ */
 function restore_scroll (key) {
     if (Scroll[key]) {
         let view = window.document.querySelector('.md-app-scroller')
@@ -49,9 +76,15 @@ function restore_scroll (key) {
 }
 
 
+/**
+ *  Report scroll percentage to callback when view scrolled
+ * 
+ *  @param callback Function(Number) | null
+ */
 function on_scroll (callback) {
     let view = window.document.querySelector('.md-app-scroller')
     if (ScrollCallback != null) {
+        // null means cancel
         view.removeEventListener('scroll', ScrollCallback)
     }
     if (callback != null) {
@@ -67,6 +100,12 @@ function on_scroll (callback) {
 }
 
 
+/**
+ *  Load an image URL using fetch API to avoid referrer check
+ * 
+ *  @param net_url URL
+ *  @return HTMLDivElement
+ */
 function display_image (net_url) {
     let div = window.document.createElement('div')
     div.classList.add('display-image')
@@ -88,7 +127,14 @@ function display_image (net_url) {
 }
 
 
+/**
+ *  Normalize a link in thread content
+ * 
+ *  @param link HTMLAnchorElement
+ *  @param push Function(HTMLElement)
+ */
 function normalize_link (link, push) {
+    /* 其实已经没什么用，中文"互联"网防外链甚于防川，没有 GFW 也能自己建墙 */
     let extract = link.href.match(/src=([^&]+)/)[1]
     let real_href = decodeURIComponent(extract)
     let match = real_href.match(/\/p\/([0-9]+)/)
@@ -125,6 +171,12 @@ function normalize_link (link, push) {
 }
 
 
+/**
+ *  Normalize content of a floor
+ * 
+ *  @param floor HTMLElement
+ *  @param push Function(HTMLElement)
+ */
 function normalize_content (floor, push) {
     let children = Array.from(floor.childNodes)
     children.pop()
@@ -173,6 +225,12 @@ function normalize_content (floor, push) {
 }
 
 
+/**
+ *  Normalize content of a floor-in-floor
+ * 
+ *  @param finf HTMLElement
+ *  @param push Function(HTMLElement)
+ */
 function normalize_finf_content (finf, push) {
     let children = Array.from(finf.childNodes)
     let first = children[0]
@@ -227,6 +285,12 @@ function normalize_finf_content (finf, push) {
 }
 
 
+/**
+ *  Get the hash color of a string
+ * 
+ *  @param string String
+ *  @return CSS_Color
+ */
 function get_color (string) {
     let M = 359
     let x = 1237

@@ -25,6 +25,11 @@ export default {
             next()
         })
         router.afterEach((t, f) => {
+            // 当用户 navigate backward 时, vue-navigation 会取出被缓存的组件,
+            // 重新 render 它. 由于 VDOM 机制的存在, render 时 DOM 会被 reuse,
+            // 那么 .md-app-scroller 的 scroll position 就会不正确, 必须修复之.
+            // 然而组件是从缓存拿出的，render 不会触发组件的 lifecycle hooks,
+            // 所以 scroll position 的恢复需要异步进行.
             if (window.requestAnimationFrame) {
                 requestAnimationFrame(() => restore_scroll(t.query.VNK))
             } else {

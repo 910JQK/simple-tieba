@@ -55,7 +55,6 @@ export default {
         this.kw = this.$route.params.kw
         this.title = `${this.kw} 吧`
         set_title(this.title, this.$route.query.VNK)
-        on_scroll(this.when_scroll.bind(this))
         let kw = encodeURIComponent(this.kw)
         ;(async () => {
             let res = await fetch(`https://tieba.baidu.com/mo/m?kw=${kw}`)
@@ -83,6 +82,13 @@ export default {
         remaining: function () {
             return (this.page_total - this.page_current)
         }
+    },
+    beforeRouteEnter: function (t, f, next) {
+        next(vm => { on_scroll(vm.when_scroll.bind(vm)) })
+    },
+    beforeRouteLeave: function (t, f, next) {
+        on_scroll(null)
+        next()
     },
     methods: {
         goto_kz: function (kz) {
@@ -124,9 +130,6 @@ export default {
                 console.log(`已加载 ${this.kw}吧 帖子列表 / 第 ${pnum} 页`)
             })()
         }
-    },
-    beforeDestroy: function () {
-        on_scroll(null)
     }
 }
 </script>

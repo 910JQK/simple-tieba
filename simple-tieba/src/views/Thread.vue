@@ -43,17 +43,16 @@ let floor_mapper = kz => f => {
     }
     let need_expand = false
     let expand_pn = '0'
-    ;(() => {
-        for (let a of f.querySelectorAll('a')) {
-            if (a.textContent == '下一段') {
-                let m = a.href.match(/pn=([0-9]+)/)
-                if (m != null) {
-                    need_expand = true
-                    expand_pn = m[1]
-                }
+    for (let a of f.querySelectorAll('a')) {
+        if (a.textContent == '下一段') {
+            let m = a.href.match(/pn=([0-9]+)/)
+            if (m != null) {
+                need_expand = true
+                expand_pn = m[1]
+                break
             }
         }
-    })()
+    }
     let content = window.document.createElement('div')
     content.classList.add('thread-content')
     content.classList.add('selectable')
@@ -86,7 +85,6 @@ export default {
         set_title(this.title)
     },
     mounted: function () {
-        on_scroll(this.when_scroll.bind(this))
         set_title('帖子内容')
         ;(async () => {
             this.kz = this.$route.params.kz
@@ -119,6 +117,13 @@ export default {
             return (this.page_total - this.page_current)
         }
     },
+    beforeRouteEnter: function (t, f, next) {
+        next(vm => { on_scroll(vm.when_scroll.bind(vm)) })
+    },
+    beforeRouteLeave: function (t, f, next) {
+        on_scroll(null)
+        next()
+    },
     methods: {
         when_scroll: function (percentage) {
             if (percentage > 0.9) {
@@ -145,9 +150,6 @@ export default {
                 console.log(`已加载 帖子 ${kz} / 第 ${pnum} 页`)
             })()
         }
-    },
-    beforeDestroy: function () {
-        on_scroll(null)
     }
 }
 </script>
