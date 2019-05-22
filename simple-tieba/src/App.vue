@@ -25,9 +25,11 @@ export default {
             next()
         })
         router.afterEach((t, f) => {
-            setTimeout(() => {
-                restore_scroll(t.query.VNK)
-            }, 0)
+            if (window.requestAnimationFrame) {
+                requestAnimationFrame(() => restore_scroll(t.query.VNK))
+            } else {
+                setTimeout(() => restore_scroll(t.query.VNK), 0)
+            }
         })
     }
 }

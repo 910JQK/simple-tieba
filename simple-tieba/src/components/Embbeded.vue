@@ -15,7 +15,7 @@
         </template>
         <template v-else >
             <div style="text-align: center;">
-                <img v-bind:src="LoadingImage" />
+                <img :src="LoadingImage" />
             </div>
         </template>
     </div>
@@ -27,6 +27,7 @@ import { parse, normalize_finf_content } from '../tools'
 import FloorInFloor from '@/components/FloorInFloor'
 import Loading from '@/assets/img-loading.gif'
 
+
 let item_mapper = offset => (item, index) => {
     let date = item.querySelector('.b').textContent
     let author = item.querySelector('br+a').textContent
@@ -36,6 +37,7 @@ let item_mapper = offset => (item, index) => {
     normalize_finf_content(item, c => content.appendChild(c))
     return { author, date, content, index: offset + index }
 }
+
 
 export default {
     name: 'embbeded',

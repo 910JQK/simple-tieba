@@ -57,7 +57,7 @@ export default {
                 let reply = match1? match1[1]: 0
                 return { kz, title, flags, author, date, reply }
             })
-            // console.log(this.threads)
+            console.log(`已加载 ${kw}吧 帖子列表`)
         })()
     },
     data: () => ({

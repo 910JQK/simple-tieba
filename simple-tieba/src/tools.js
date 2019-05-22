@@ -5,6 +5,7 @@ import Loading from '@/assets/img-loading.gif'
 
 var Title = {}
 var Scroll = {}
+var ScrollCallback = null
 
 
 function parse (xml_text) {
@@ -44,6 +45,24 @@ function restore_scroll (key) {
         if (view != null) {
             view.scrollTop = Scroll[key]
         }
+    }
+}
+
+
+function on_scroll (callback) {
+    let view = window.document.querySelector('.md-app-scroller')
+    if (ScrollCallback != null) {
+        view.removeEventListener('scroll', ScrollCallback)
+    }
+    if (callback != null) {
+        ScrollCallback = ev => {
+            if (view.scrollTop > 0.5) {
+                callback((view.scrollTop+view.offsetHeight)/view.scrollHeight)
+            }
+        }
+        view.addEventListener('scroll', ScrollCallback)
+    } else {
+        ScrollCallback = null
     }
 }
 
@@ -226,5 +245,5 @@ function get_color (string) {
 
 
 export {
-    parse, set_title, recover_title, save_scroll, restore_scroll, normalize_content, normalize_finf_content, get_color
+    parse, set_title, recover_title, save_scroll, restore_scroll, on_scroll, normalize_content, normalize_finf_content, get_color
 }
