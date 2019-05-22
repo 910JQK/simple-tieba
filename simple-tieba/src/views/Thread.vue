@@ -121,7 +121,7 @@ export default {
     },
     methods: {
         when_scroll: function (percentage) {
-            if (percentage > 0.95) {
+            if (percentage > 0.9) {
                 if (!this.next_loading && this.remaining > 0) {
                     this.next_loading = true
                     this.load_next()

@@ -176,10 +176,11 @@ function normalize_content (floor, push) {
 function normalize_finf_content (finf, push) {
     let children = Array.from(finf.childNodes)
     let first = children[0]
-    if (first && first.textContent.match(/^回复 ?$/) != null) {
+    let first_content = first? first.textContent: ''
+    if (first_content.match(/^回复 ?$/) != null) {
         children.shift()
-    } else if (first && first.textContent.match(/^回复[^：]*：/) != null) {
-        first.textContent = first.textContent.replace(/^[^：]*：/, '')
+    } else if (first_content.match(/^回复[^：:]*[：:]/) != null) {
+        first.textContent = first.textContent.replace(/^[^：:]*[：:]/, '')
     }
     let end = finf.querySelector('br+a')
     let prev = ''

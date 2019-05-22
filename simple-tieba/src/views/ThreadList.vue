@@ -17,8 +17,10 @@
                 </div>
             </li>
         </ul>
+        <div class="next_loading_indicator" v-if="next_loading">
+            <img :src="Loading" />
+        </div>
     </div>
-    <div style="display: none" ref="helper"></div>
   </div>
 </template>
 
@@ -26,7 +28,26 @@
 <script>
 import 'whatwg-fetch'
 import router from '@/router'
-import { parse, set_title } from '@/tools'
+import { parse, set_title, on_scroll } from '@/tools'
+import Loading from '@/assets/img-loading.gif'
+
+
+let thread_mapper = t => {
+    let a = t.querySelector('a')
+    let match = a.href.match(/kz=([0-9]+)/)
+    let kz = match? match[1]: ''
+    let title = a.textContent.replace(/^[0-9]+./, '').trim()
+    let light = Array.from(t.querySelectorAll('span.light'))
+    let flags = light.map(l => l.textContent)
+    let p = t.querySelector('p')
+    let fields = p.textContent.split(/[ \u00a0]+/)
+    let author = (fields.length == 4)? (fields[2] || ''): ''
+    let date = fields[fields.length-1] || ''
+    let match1 = p.textContent.match(/回([0-9]+)/)
+    let reply = match1? match1[1]: 0
+    return { kz, title, flags, author, date, reply }
+}
+
 
 export default {
     name: 'thread-list',
@@ -34,40 +55,78 @@ export default {
         this.kw = this.$route.params.kw
         this.title = `${this.kw} 吧`
         set_title(this.title, this.$route.query.VNK)
-        this.$refs.helper.onload = () => set_title(this.title)
+        on_scroll(this.when_scroll.bind(this))
         let kw = encodeURIComponent(this.kw)
         ;(async () => {
-            let res = await fetch('https://tieba.baidu.com/mo/m?kw=' + kw)
+            let res = await fetch(`https://tieba.baidu.com/mo/m?kw=${kw}`)
             let text = await res.text()
             let document = parse(text)
+            let pnum_input = document.querySelector('input[name=pnum]')
+            if (pnum_input != null) {
+                this.page_total = Number(pnum_input.value)
+            }
             let threads = Array.from(document.querySelectorAll('div.i'))
-            console.log(threads.map(t => t.textContent.split(' ')))
-            this.threads = threads.map(t => {
-                let a = t.querySelector('a')
-                let match = a.href.match(/kz=([0-9]+)/)
-                let kz = match? match[1]: ''
-                let title = a.textContent.replace(/^[0-9]+./, '').trim()
-                let light = Array.from(t.querySelectorAll('span.light'))
-                let flags = light.map(l => l.textContent)
-                let p = t.querySelector('p')
-                let fields = p.textContent.split(/[ \u00a0]+/)
-                let author = (fields.length == 4)? (fields[2] || ''): ''
-                let date = fields[fields.length-1] || ''
-                let match1 = p.textContent.match(/回([0-9]+)/)
-                let reply = match1? match1[1]: 0
-                return { kz, title, flags, author, date, reply }
-            })
-            console.log(`已加载 ${kw}吧 帖子列表`)
+            this.threads = threads.map(thread_mapper)
+            console.log(`已加载 ${this.kw}吧 帖子列表 / 第 1 页`)
         })()
     },
     data: () => ({
         threads: [],
-        kw: null
+        kw: null,
+        page_total: 1,
+        page_current: 1,
+        next_loading: false,
+        shown_kz: {},
+        Loading
     }),
+    computed: {
+        remaining: function () {
+            return (this.page_total - this.page_current)
+        }
+    },
     methods: {
         goto_kz: function (kz) {
             router.push({ name: 'thread', params: {kz} })
+        },
+        when_scroll: function (percentage) {
+            if (percentage > 0.9) {
+                if (!this.next_loading && this.remaining > 0) {
+                    this.next_loading = true
+                    this.load_next()
+                }
+            }
+        },
+        load_next: function () {
+            ;(async () => {
+                let kw = encodeURIComponent(this.kw)
+                let pnum = this.page_current + 1
+                let res = await fetch (
+                    `https://tieba.baidu.com/mo/m?kw=${kw}&pnum=${pnum}`
+                )
+                let text = await res.text()
+                let document = parse(text)
+                let threads = Array.from(document.querySelectorAll('div.i'))
+                threads = threads.filter(t => {
+                    let a = t.querySelector('a')
+                    let match = a.href.match(/kz=([0-9]+)/)
+                    let kz = match? match[1]: ''
+                    if (!this.shown_kz[kz]) {
+                        this.shown_kz[kz] = true
+                        return true
+                    } else {
+                        return false
+                    }
+                })
+                let delta = threads.map(thread_mapper)
+                this.threads = [...this.threads, ...delta]
+                this.page_current = pnum
+                this.next_loading = false
+                console.log(`已加载 ${this.kw}吧 帖子列表 / 第 ${pnum} 页`)
+            })()
         }
+    },
+    beforeDestroy: function () {
+        on_scroll(null)
     }
 }
 </script>
@@ -128,5 +187,8 @@ export default {
 }
 .info {
     color: hsl(0, 0%, 30%);
+}
+.next_loading_indicator {
+    text-align: center;
 }
 </style>
