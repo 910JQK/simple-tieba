@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Thread from './views/Thread.vue'
 import ThreadList from './views/ThreadList.vue'
+import Login from './views/Login.vue'
 
 Vue.use(Router)
 
@@ -22,6 +23,11 @@ export default new Router({
             path: '/thread/:kz',
             name: 'thread',
             component: Thread
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: Login
         }
     ]
 })

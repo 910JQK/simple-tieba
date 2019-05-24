@@ -6,6 +6,10 @@
                 <md-icon>send</md-icon>
                 <span class="md-list-item-text">进吧</span>
             </md-list-item>
+            <md-list-item v-on:click="login">
+                <md-icon>account_circle</md-icon>
+                <span class="md-list-item-text">登入</span>
+            </md-list-item>
             <md-list-item>
                 <md-icon>delete</md-icon>
                 <span class="md-list-item-text">Trash</span>
@@ -29,6 +33,10 @@ export default {
             if (kw == '') { return }
             kw = kw.split(' ')[0]
             router.push({ name: 'thread-list', params: {kw} })
+        },
+        login: function () {
+            this.$emit('hide')
+            router.push({ name: 'login' })
         }
     }
 }
