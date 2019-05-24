@@ -60,6 +60,10 @@ export default {
             let res = await fetch(`https://tieba.baidu.com/mo/m?kw=${kw}`)
             let text = await res.text()
             let document = parse(text)
+            if (document.querySelector('div.i') == null) {
+                alert(`该贴吧不存在`)
+                router.back()
+            }
             let pnum_input = document.querySelector('input[name=pnum]')
             if (pnum_input != null) {
                 this.page_total = Number(pnum_input.value)

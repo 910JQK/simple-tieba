@@ -6,11 +6,13 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
+import { set_title } from '@/tools'
 
 export default {
     name: 'home',
+    mounted: function () {
+        set_title('极简贴吧', this.$route.query.VNK)  
+    },
     data: () => ({
         kw: 'linux'
     }),

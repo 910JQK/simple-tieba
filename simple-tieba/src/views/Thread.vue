@@ -4,7 +4,7 @@
     </div>
     <div class="content" v-else >
         <ul>
-            <li v-for="floor in floors">
+            <li v-for="(floor, index) in floors" :key="index">
                 <floor :data="floor"></floor>
             </li>
         </ul>

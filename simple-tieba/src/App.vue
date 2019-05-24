@@ -2,8 +2,15 @@
     <div id="app">
         <md-app md-waterfall md-mode="fixed">
             <md-app-toolbar class="md-primary">
-                <span class="md-title" id="title">极简贴吧</span>
+                <md-button class="md-icon-button"
+                           v-on:click="show_menu = !show_menu">
+                    <md-icon>menu</md-icon>
+                </md-button>
+                <span class="md-title" id="title"></span>
             </md-app-toolbar>
+            <md-app-drawer :md-active.sync="show_menu">
+                <drawer v-on:hide="show_menu = false"></drawer>
+            </md-app-drawer>
             <md-app-content>
                 <navigation>
                     <router-view />
@@ -14,10 +21,14 @@
 </template>
 
 <script>
-import router from './router'
+import router from '@/router'
+import Drawer from '@/components/Drawer'
 import { recover_title, save_scroll, restore_scroll } from './tools'
 
 export default {
+    components: {
+        Drawer
+    },
     created: function () {
         router.beforeEach((t, f, next) => {
             recover_title(t.query.VNK)
@@ -36,7 +47,10 @@ export default {
                 setTimeout(() => restore_scroll(t.query.VNK), 0)
             }
         })
-    }
+    },
+    data: () => ({
+        show_menu: false
+    })
 }
 </script>
 

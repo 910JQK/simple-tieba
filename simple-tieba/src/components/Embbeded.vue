@@ -1,7 +1,7 @@
 <template>
     <div class="embbeded">
         <template v-if="items.length > 0">
-            <floor-in-floor v-for="item in items" :data="item" :key="item.index">
+            <floor-in-floor v-for="(item, index) in items" :data="item" :key="index">
             </floor-in-floor>
             <div :class="['expander',{'loading':expand_loading}]"
                  v-if="remaining > 0" v-on:click="expand()">
@@ -23,19 +23,19 @@
 
 <script>
 import 'whatwg-fetch'
-import { parse, normalize_finf_content } from '../tools'
+import { parse, normalize_finf_content } from '@/tools'
 import FloorInFloor from '@/components/FloorInFloor'
 import Loading from '@/assets/img-loading.gif'
 
 
-let item_mapper = offset => (item, index) => {
+let item_mapper = item => {
     let date = item.querySelector('.b').textContent
     let author = item.querySelector('br+a').textContent
     let content = window.document.createElement('div')
     content.classList.add('finf-content')
     content.classList.add('selectable')
     normalize_finf_content(item, c => content.appendChild(c))
-    return { author, date, content, index: offset + index }
+    return { author, date, content }
 }
 
 
@@ -52,7 +52,7 @@ export default {
             let page_total = page_input? Number(page_input.value): 1
             this.page_total = page_total
             let raw_items = Array.from(document.querySelectorAll('div.i'))
-            let items = raw_items.map(item_mapper(0))
+            let items = raw_items.map(item_mapper)
             this.items = items
         })()
     },
@@ -84,7 +84,7 @@ export default {
                 let text = await res.text()
                 let document = parse(text)
                 let raw_items = Array.from(document.querySelectorAll('div.i'))
-                let items = raw_items.map(item_mapper(this.items.length))
+                let items = raw_items.map(item_mapper)
                 this.items = [...this.items, ...items]
                 this.expand_loading = false
                 this.page_current += 1
