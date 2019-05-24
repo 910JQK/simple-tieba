@@ -17,6 +17,12 @@
                 </navigation>
             </md-app-content>
         </md-app>
+        <md-speed-dial class="md-bottom-right" v-if="sd_type != 'none'">
+            <md-speed-dial-target class="md-primary">
+                <md-icon v-if="sd_type == 'reply'">reply</md-icon>
+                <md-icon v-if="sd_type == 'add'">add</md-icon>
+            </md-speed-dial-target>
+        </md-speed-dial>
     </div>
 </template>
 
@@ -33,6 +39,13 @@ export default {
         router.beforeEach((t, f, next) => {
             recover_title(t.query.VNK)
             save_scroll(f.query.VNK)
+            if (t.name == 'thread-list') {
+                this.sd_type = 'add'
+            } else if (t.name == 'thread') {
+                this.sd_type = 'reply'
+            } else {
+                this.sd_type = 'none'
+            }
             next()
         })
         router.afterEach((t, f) => {
@@ -49,7 +62,8 @@ export default {
         })
     },
     data: () => ({
-        show_menu: false
+        show_menu: false,
+        sd_type: 'none'
     })
 }
 </script>
