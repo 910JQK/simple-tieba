@@ -101,11 +101,13 @@ export default {
             }
             let floors = Array.from(document.querySelectorAll('.d > .i'))
             this.floors = floors.map(floor_mapper(kz))
+            this.update_reply_target()
             console.log(`已加载 帖子 ${kz} / 第 1 页`)
         })()
     },
     data: () => ({
         kz: null,
+        title: '',
         floors: [],
         page_total: 1,
         page_current: 1,
@@ -118,7 +120,10 @@ export default {
         }
     },
     beforeRouteEnter: function (t, f, next) {
-        next(vm => { on_scroll(vm.when_scroll.bind(vm)) })
+        next(vm => {
+            on_scroll(vm.when_scroll.bind(vm))
+            vm.update_reply_target()
+        })
     },
     beforeRouteLeave: function (t, f, next) {
         on_scroll(null)
@@ -149,6 +154,13 @@ export default {
                 this.next_loading = false
                 console.log(`已加载 帖子 ${kz} / 第 ${pnum} 页`)
             })()
+        },
+        update_reply_target: function () {
+            if (this.floors.length > 0) {
+                window.reply_author = this.floors[0].author
+                window.reply_title = this.title
+                window.reply_text = this.floors[0].content.textContent
+            }
         }
     }
 }

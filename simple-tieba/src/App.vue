@@ -67,6 +67,9 @@ export default {
             if (this.sd_type == 'add') {
                 let kw = router.currentRoute.params.kw
                 router.push({ name: 'new-thread', params: {kw} })
+            } else if (this.sd_type == 'reply') {
+                let kz = router.currentRoute.params.kz
+                router.push({ name: 'new-reply', params: {kz} })
             }
         },
         update_sd: function (r) {

@@ -3,9 +3,6 @@ import router from './router'
 import Loading from '@/assets/img-loading.gif'
 
 
-const FakeUA = 'Mozilla/5.0 (X11; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0'
-
-
 var Title = {}   // Map<VNK, page_title>
 var Scroll = {}   // Map<VNK, scroll_top>
 var ScrollCallback = null   // null | Function
@@ -24,6 +21,9 @@ function parse (xml_text) {
 
 /**
  *  Encode data of Content-Type: application/x-www-form-urlencoded
+ * 
+ *  @param data Object
+ *  @return String
  */
 function encode_query (data) {
     return Array.from((function* () {
@@ -33,6 +33,18 @@ function encode_query (data) {
             yield `${name}=${value}`
         }
     })()).join('&')
+}
+
+
+/**
+ *  Truncate text with ... appended
+ */
+function truncate (text, len) {
+    if (text.length > len) {
+        return text.slice(0, len) + '...'
+    } else {
+        return text
+    }
 }
 
 
@@ -342,6 +354,9 @@ function confirm (dirty) {
 
 
 export {
-    parse, set_title, recover_title, save_scroll, restore_scroll, on_scroll, encode_query, normalize_content, normalize_finf_content, get_color,
+    parse, encode_query, truncate,
+    set_title, recover_title,
+    save_scroll, restore_scroll, on_scroll,
+    normalize_content, normalize_finf_content, get_color,
     confirm
 }
