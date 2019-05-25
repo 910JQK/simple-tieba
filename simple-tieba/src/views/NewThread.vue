@@ -50,6 +50,7 @@ export default {
         submit: function () {
             if (!this.dirty) { return }
             this.busy = true
+            let VNK = this.$route.query.VNK
             let kw = encodeURIComponent(this.kw)
             let ti = this.title
             let co = this.content
@@ -84,8 +85,10 @@ export default {
                     if (t && t.textContent == '发贴成功') {
                         alert('发帖成功')
                         this.clear()
-                        router.back()
-                        setTimeout(() => { location.reload() }, 500)
+                        if (this.$route.query.VNK == VNK) {
+                            router.back()
+                            setTimeout(() => { location.reload() }, 500)
+                        }
                     } else {
                         alert('发帖失败')
                     }

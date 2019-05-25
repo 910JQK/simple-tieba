@@ -1,10 +1,10 @@
 <template>
     <div class="buttons">
-        <md-button class="md-raised md-accent" disabled.if="busy"
+        <md-button class="md-raised md-accent" :disabled="busy"
                    v-on:click="cancel()">
             取消
         </md-button>
-        <md-button class="md-raised md-primary" disabled.if="!enabled || busy"
+        <md-button class="md-raised md-primary" :disabled="!enabled || busy"
                    v-on:click="$emit('submit')">
             发表
         </md-button>
