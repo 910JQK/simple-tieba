@@ -64,12 +64,13 @@ export default {
     }),
     methods: {
         dial: function () {
+            let VNK = router.currentRoute.query.VNK
             if (this.sd_type == 'add') {
-                let kw = router.currentRoute.params.kw
-                router.push({ name: 'new-thread', params: {kw} })
+                router.push({ name: 'new-thread' })
             } else if (this.sd_type == 'reply') {
-                let kz = router.currentRoute.params.kz
-                router.push({ name: 'new-reply', params: {kz} })
+                if (window.target_info && window.target_info.VNK == VNK) {
+                    router.push({ name: 'new-reply' })
+                }
             }
         },
         update_sd: function (r) {

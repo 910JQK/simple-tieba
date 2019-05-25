@@ -14,7 +14,8 @@
 </template>
 
 <script>
-import { set_title, confirm, parse, encode_query } from '@/tools'
+import { set_title, confirm, parse } from '@/tools'
+import { get_submit_info, submit } from '@/submit'
 import SubmitButtons from '@/components/SubmitButtons.vue'
 import router from '@/router'
 
@@ -23,18 +24,22 @@ export default {
     components: {
         SubmitButtons
     },
+    beforeRouteEnter: function (t, f, next) {
+        next(vm => {
+            vm.info = get_submit_info(f.query.VNK)
+        })
+    },
     beforeRouteLeave: function (t, f, next) {
         if (confirm(this.dirty)) {
             next()
         }
     },
     mounted: function () {
-        let kw = this.$route.params.kw
-        this.kw = kw
-        set_title(`发表主题帖（${kw}吧）`, this.$route.query.VNK)
+        let kw = window.target_info.kw
+        set_title(`发表主题帖（${kw}吧）`, vm.$route.query.VNK)
     },
     data: () => ({
-        kw: null,
+        info: null,
         title: '',
         content: '',
         busy: false
@@ -52,52 +57,17 @@ export default {
         submit: function () {
             if (!this.dirty) { return }
             this.busy = true
-            let VNK = this.$route.query.VNK
-            let kw = encodeURIComponent(this.kw)
             let ti = this.title
             let co = this.content
-            ;(async () => {
-                let res = await fetch(`https://tieba.baidu.com/mo/m?kw=${kw}`)
-                let text = await res.text()
-                let document = parse(text)
-                let form = document.querySelector('form[method=post]')
-                let match = form.action.match(/mo\/([^\/]+)\//)
-                let magic = match? match[1]: 'm'
-                let submit_url = `https://tieba.baidu.com/mo/${magic}/submit`
-                let fields = Array.from(form.querySelectorAll('input[name]'))
-                let need_remove = new Set(['insert_smile', 'insert_pic'])
-                let data = {}
-                for (let field of fields) {
-                    if (!need_remove.has(field.name)) {
-                        data[field.name] = field.value
-                    }
+            submit(this.info, { ti, co }, '发贴成功', ok => {
+                if (ok) {
+                    alert('发帖成功')
+                    this.clear()
+                } else {
+                    alert('发帖失败')
                 }
-                data.ti = ti
-                data.co = co
-                let body = encode_query(data)
-                let URL_ENCODED = 'application/x-www-form-urlencoded'
-                ;(async () => {
-                    let res = await fetch(submit_url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': URL_ENCODED },
-                        body: body
-                    })
-                    let text = await res.text()
-                    let document = parse(text)
-                    let t = document.querySelector('span.light')
-                    if (t && t.textContent == '发贴成功') {
-                        alert('发帖成功')
-                        this.clear()
-                        if (this.$route.query.VNK == VNK) {
-                            router.back()
-                            setTimeout(() => { location.reload() }, 500)
-                        }
-                    } else {
-                        alert('发帖失败')
-                    }
-                    this.busy = false
-                })()
-            })()
+                this.busy = false
+            })
         }
     }
 }

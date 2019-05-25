@@ -17,6 +17,7 @@
 <script>
 import 'whatwg-fetch'
 import { parse, set_title, on_scroll, normalize_content } from '@/tools'
+import { extract_submit_info } from '@/submit'
 import Floor from '@/components/Floor'
 import Loading from '@/assets/img-loading.gif'
 
@@ -89,9 +90,11 @@ export default {
         ;(async () => {
             this.kz = this.$route.params.kz
             let kz = this.kz
-            let res = await fetch('https://tieba.baidu.com/mo/m?kz=' + kz)
+            let kz_url = `https://tieba.baidu.com/mo/m?kz=${kz}`
+            let res = await fetch(kz_url)
             let text = await res.text()
             let document = parse(text)
+            extract_submit_info(document, kz_url)
             let title = document.querySelector('.bc > strong').textContent
             this.title = title
             set_title(title, this.$route.query.VNK)
@@ -101,7 +104,7 @@ export default {
             }
             let floors = Array.from(document.querySelectorAll('.d > .i'))
             this.floors = floors.map(floor_mapper(kz))
-            this.update_reply_target()
+            this.update_target()
             console.log(`已加载 帖子 ${kz} / 第 1 页`)
         })()
     },
@@ -122,7 +125,7 @@ export default {
     beforeRouteEnter: function (t, f, next) {
         next(vm => {
             on_scroll(vm.when_scroll.bind(vm))
-            vm.update_reply_target()
+            vm.update_target()
         })
     },
     beforeRouteLeave: function (t, f, next) {
@@ -155,11 +158,14 @@ export default {
                 console.log(`已加载 帖子 ${kz} / 第 ${pnum} 页`)
             })()
         },
-        update_reply_target: function () {
+        update_target: function () {
             if (this.floors.length > 0) {
-                window.reply_author = this.floors[0].author
-                window.reply_title = this.title
-                window.reply_text = this.floors[0].content.textContent
+                window.target_info = {
+                    author: this.floors[0].author,
+                    title: this.title,
+                    text: this.floors[0].content.textContent,
+                    VNK: this.$route.query.VNK
+                }
             }
         }
     }

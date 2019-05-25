@@ -27,8 +27,9 @@
 
 <script>
 import 'whatwg-fetch'
-import router from '@/router'
 import { parse, set_title, on_scroll } from '@/tools'
+import { extract_submit_info } from '@/submit'
+import router from '@/router'
 import Loading from '@/assets/img-loading.gif'
 
 
@@ -57,19 +58,22 @@ export default {
         set_title(this.title, this.$route.query.VNK)
         let kw = encodeURIComponent(this.kw)
         ;(async () => {
-            let res = await fetch(`https://tieba.baidu.com/mo/m?kw=${kw}`)
+            let kw_url = `https://tieba.baidu.com/mo/m?kw=${kw}`
+            let res = await fetch(kw_url)
             let text = await res.text()
             let document = parse(text)
             if (document.querySelector('div.i') == null) {
                 alert(`该贴吧不存在`)
                 router.back()
             }
+            extract_submit_info(document, kw_url)
             let pnum_input = document.querySelector('input[name=pnum]')
             if (pnum_input != null) {
                 this.page_total = Number(pnum_input.value)
             }
             let threads = Array.from(document.querySelectorAll('div.i'))
             this.threads = threads.map(thread_mapper)
+            this.update_target()
             console.log(`已加载 ${this.kw}吧 帖子列表 / 第 1 页`)
         })()
     },
@@ -90,6 +94,7 @@ export default {
     beforeRouteEnter: function (t, f, next) {
         next(vm => {
             on_scroll(vm.when_scroll.bind(vm))
+            vm.update_target()
         })
     },
     beforeRouteLeave: function (t, f, next) {
@@ -135,6 +140,12 @@ export default {
                 this.next_loading = false
                 console.log(`已加载 ${this.kw}吧 帖子列表 / 第 ${pnum} 页`)
             })()
+        },
+        update_target: function () {
+            window.target_info = {
+                kw: this.kw,
+                VNK: this.$route.query.VNK
+            }
         }
     }
 }
