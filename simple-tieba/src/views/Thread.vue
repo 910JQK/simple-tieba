@@ -34,7 +34,7 @@ let floor_mapper = kz => f => {
     let pid = null
     let reply = 0
     let r = f.querySelector('a.reply_to')
-    if (r != null) {
+    if (r != null && r.href.match('pid=([0-9]+)') != null) {
         pid = r.href.match('pid=([0-9]+)')[1]
         let r_match = r.textContent.match(/\(([0-9]+)\)$/)
         if (r_match != null) {

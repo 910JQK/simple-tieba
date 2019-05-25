@@ -88,7 +88,9 @@ export default {
         }
     },
     beforeRouteEnter: function (t, f, next) {
-        next(vm => { on_scroll(vm.when_scroll.bind(vm)) })
+        next(vm => {
+            on_scroll(vm.when_scroll.bind(vm))
+        })
     },
     beforeRouteLeave: function (t, f, next) {
         on_scroll(null)

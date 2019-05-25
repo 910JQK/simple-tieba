@@ -4,10 +4,12 @@ import Home from './views/Home.vue'
 import Thread from './views/Thread.vue'
 import ThreadList from './views/ThreadList.vue'
 import Login from './views/Login.vue'
+import NewThread from './views/NewThread.vue'
 
 Vue.use(Router)
 
-export default new Router({
+
+let router = new Router({
     routes: [
         {
             path: '/',
@@ -28,6 +30,17 @@ export default new Router({
             path: '/login',
             name: 'login',
             component: Login
+        },
+        {
+            path: '/new-thread/:kw',
+            name: 'new-thread',
+            component: NewThread
+            
         }
     ]
 })
+
+
+window.router = router
+
+export default router

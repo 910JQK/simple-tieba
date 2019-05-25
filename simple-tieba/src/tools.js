@@ -3,6 +3,9 @@ import router from './router'
 import Loading from '@/assets/img-loading.gif'
 
 
+const FakeUA = 'Mozilla/5.0 (X11; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0'
+
+
 var Title = {}   // Map<VNK, page_title>
 var Scroll = {}   // Map<VNK, scroll_top>
 var ScrollCallback = null   // null | Function
@@ -16,6 +19,20 @@ var ScrollCallback = null   // null | Function
  */
 function parse (xml_text) {
     return (new DOMParser()).parseFromString(xml_text, 'application/xml')
+}
+
+
+/**
+ *  Encode data of Content-Type: application/x-www-form-urlencoded
+ */
+function encode_query (data) {
+    return Array.from((function* () {
+        for (let key of Object.keys(data)) {
+            let name = encodeURIComponent(key)
+            let value = encodeURIComponent(data[key])
+            yield `${name}=${value}`
+        }
+    })()).join('&')
 }
 
 
@@ -309,6 +326,22 @@ function get_color (string) {
 }
 
 
+/**
+ *  Ask for confirmation before leave editing
+ * 
+ *  @param dirty Bool
+ *  @return Bool
+ */ 
+function confirm (dirty) {
+    if (dirty) {
+        return window.confirm('真的要丢弃已经输入的内容吗？')
+    } else {
+        return true
+    }
+}
+
+
 export {
-    parse, set_title, recover_title, save_scroll, restore_scroll, on_scroll, normalize_content, normalize_finf_content, get_color
+    parse, set_title, recover_title, save_scroll, restore_scroll, on_scroll, encode_query, normalize_content, normalize_finf_content, get_color,
+    confirm
 }

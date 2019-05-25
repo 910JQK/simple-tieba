@@ -18,7 +18,7 @@
             </md-app-content>
         </md-app>
         <md-speed-dial class="md-bottom-right" v-if="sd_type != 'none'">
-            <md-speed-dial-target class="md-primary">
+            <md-speed-dial-target class="md-primary" v-on:click="dial()">
                 <md-icon v-if="sd_type == 'reply'">reply</md-icon>
                 <md-icon v-if="sd_type == 'add'">add</md-icon>
             </md-speed-dial-target>
@@ -39,13 +39,7 @@ export default {
         router.beforeEach((t, f, next) => {
             recover_title(t.query.VNK)
             save_scroll(f.query.VNK)
-            if (t.name == 'thread-list') {
-                this.sd_type = 'add'
-            } else if (t.name == 'thread') {
-                this.sd_type = 'reply'
-            } else {
-                this.sd_type = 'none'
-            }
+            this.update_sd(t)
             next()
         })
         router.afterEach((t, f) => {
@@ -61,10 +55,30 @@ export default {
             }
         })
     },
+    mounted: function () {
+        this.update_sd(router.currentRoute)
+    },
     data: () => ({
         show_menu: false,
         sd_type: 'none'
-    })
+    }),
+    methods: {
+        dial: function () {
+            if (this.sd_type == 'add') {
+                let kw = router.currentRoute.params.kw
+                router.push({ name: 'new-thread', params: {kw} })
+            }
+        },
+        update_sd: function (r) {
+            if (r.name == 'thread-list') {
+                this.sd_type = 'add'
+            } else if (r.name == 'thread') {
+                this.sd_type = 'reply'
+            } else {
+                this.sd_type = 'none'
+            }
+        }
+    }
 }
 </script>
 
