@@ -6,7 +6,7 @@
         </md-field>
         <md-field>
             <label>内容</label>
-            <md-textarea v-model="content"></md-textarea>
+            <md-textarea v-model="content" spellcheck="false"></md-textarea>
         </md-field>
         <submit-buttons v-on:submit="submit()" :enabled="dirty" :busy="busy">
         </submit-buttons>
@@ -61,6 +61,9 @@ export default {
                 let text = await res.text()
                 let document = parse(text)
                 let form = document.querySelector('form[method=post]')
+                let match = form.action.match(/mo\/([^\/]+)\//)
+                let magic = match? match[1]: 'm'
+                let submit_url = `https://tieba.baidu.com/mo/${magic}/submit`
                 let fields = Array.from(form.querySelectorAll('input[name]'))
                 let need_remove = new Set(['insert_smile', 'insert_pic'])
                 let data = {}
@@ -74,8 +77,7 @@ export default {
                 let body = encode_query(data)
                 let URL_ENCODED = 'application/x-www-form-urlencoded'
                 ;(async () => {
-                    let SUBMIT_URL = 'https://tieba.baidu.com/mo/m/submit'
-                    let res = await fetch(SUBMIT_URL, {
+                    let res = await fetch(submit_url, {
                         method: 'POST',
                         headers: { 'Content-Type': URL_ENCODED },
                         body: body

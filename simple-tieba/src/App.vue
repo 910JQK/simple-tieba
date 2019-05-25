@@ -89,6 +89,9 @@ export default {
 .md-app {
   height: 100vh;
 }
+.md-toolbar {
+    flex-wrap: nowrap !important;
+}
 :not(.selectable) {
     user-select: none;
 }
