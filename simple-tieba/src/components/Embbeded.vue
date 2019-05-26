@@ -1,5 +1,5 @@
 <template>
-    <div class="embbeded">
+    <div class="embbeded" v-show="show">
         <template v-if="items.length > 0">
             <floor-in-floor v-for="(item, index) in items" :data="item" :key="index">
             </floor-in-floor>
@@ -13,7 +13,7 @@
                 </template>
             </div>
         </template>
-        <template v-else >
+        <template v-else-if="show" >
             <div style="text-align: center;">
                 <img :src="LoadingImage" />
             </div>
@@ -24,6 +24,7 @@
 <script>
 import 'whatwg-fetch'
 import { parse, normalize_finf_content } from '@/tools'
+import { extract_submit_info } from '@/submit'
 import FloorInFloor from '@/components/FloorInFloor'
 import Loading from '@/assets/img-loading.gif'
 
@@ -41,13 +42,16 @@ let item_mapper = item => {
 
 export default {
     name: 'embbeded',
-    props: ['pid', 'kz'],
+    props: ['pid', 'kz', 'show'],
     components: { FloorInFloor },
     created: function () {
         ;(async () => {
             let res = await fetch(this.base_url)
             let text = await res.text()
             let document = parse(text)
+            let k = `${this.pid}-${this.kz}`
+            extract_submit_info(document, this.base_url, k)
+            this.$emit('reply-ready')
             let page_input = document.querySelector('.h > input[type=text]')
             let page_total = page_input? Number(page_input.value): 1
             this.page_total = page_total

@@ -6,6 +6,7 @@ import ThreadList from './views/ThreadList.vue'
 import Login from './views/Login.vue'
 import NewThread from './views/NewThread.vue'
 import NewReply from './views/NewReply.vue'
+import NewSubReply from './views/NewSubReply.vue'
 
 Vue.use(Router)
 
@@ -33,14 +34,19 @@ let router = new Router({
             component: Login
         },
         {
-            path: '/new-thread/:kw',
+            path: '/new-thread',
             name: 'new-thread',
             component: NewThread
         },
         {
-            path: '/new-reply/:kz',
+            path: '/new-reply',
             name: 'new-reply',
             component: NewReply
+        },
+        {
+            path: '/new-sub-reply',
+            name: 'new-sub-reply',
+            component: NewSubReply
         }
     ]
 })

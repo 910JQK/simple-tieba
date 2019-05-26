@@ -176,6 +176,10 @@ export default {
 ul {
     list-style: none;
     padding: 0px;
+    margin: 0px;
+}
+.content:not(.loading) {
+    margin-bottom: 6.5rem;
 }
 .next_loading_indicator {
     text-align: center;

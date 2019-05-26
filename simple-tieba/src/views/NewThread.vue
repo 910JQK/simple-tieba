@@ -26,7 +26,9 @@ export default {
     },
     beforeRouteEnter: function (t, f, next) {
         next(vm => {
-            vm.info = get_submit_info(f.query.VNK)
+            if (vm.info === null) {
+                vm.info = get_submit_info(f.query.VNK)
+            }
         })
     },
     beforeRouteLeave: function (t, f, next) {

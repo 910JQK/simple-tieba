@@ -1,7 +1,6 @@
- <template>
+<template>
     <div>
         <blockquote class="reply_target">
-            <div class="reply_title">{{ title }}</div>
             <div class="reply_text">{{ text }}</div>
         </blockquote>
         <md-field>
@@ -15,22 +14,18 @@
 </template>
 
 <script>
-import { set_title, confirm, truncate } from '@/tools'
+import { set_title, confirm, parse, truncate } from '@/tools'
 import { get_submit_info, submit } from '@/submit'
 import SubmitButtons from '@/components/SubmitButtons.vue'
 import router from '@/router'
 
 export default {
-    name: 'new-reply',
+    name: 'new-sub-reply',
     components: {
         SubmitButtons
     },
     beforeRouteEnter: function (t, f, next) {
-        next(vm => {
-            if (vm.info === null) {
-                vm.info = get_submit_info(f.query.VNK)
-            }
-        })
+        next()
     },
     beforeRouteLeave: function (t, f, next) {
         if (confirm(this.dirty)) {
@@ -38,16 +33,21 @@ export default {
         }
     },
     mounted: function () {
-        this.title = window.target_info.title
-        this.text = truncate(window.target_info.text, 60)
-        this.author = window.target_info.author
+        this.pid = this.$route.query.pid
+        this.kz = this.$route.query.kz
+        this.info = get_submit_info(`${this.pid}-${this.kz}`)
+        this.text = truncate(window.sub_reply_info.text, 60)
+        this.author = window.sub_reply_info.author
+        this.callback = window.sub_reply_info.callback
         set_title(`回复给：${this.author}`, this.$route.query.VNK)
     },
     data: () => ({
+        kz: null,
+        pid: null,
         info: null,
-        title: null,
         text: null,
         author: null,
+        callback: null,
         content: '',
         busy: false
     }),
@@ -72,6 +72,7 @@ export default {
                     alert('回帖失败')
                 }
                 this.busy = false
+                return this.callback
             })
         }
     }
@@ -86,12 +87,6 @@ export default {
     border-radius: 5px;
     color: hsl(0, 0%, 25%);
     background-color: hsla(0, 0%, 75%, 0.3);
-}
-.reply_title {
-    overflow-x: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    margin-bottom: 0.2rem;
 }
 </style>
 

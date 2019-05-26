@@ -39,6 +39,8 @@ export default {
     margin-bottom: 0.6rem;
     padding-left: 1.25rem;
     padding-right: 0.3rem;
+    overflow-x: hidden;
+    word-wrap: break-word;
 }
 .finf-reply::after {
     content: ":";
