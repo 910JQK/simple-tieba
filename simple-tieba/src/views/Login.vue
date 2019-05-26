@@ -6,8 +6,13 @@
 </template>
 
 <script>
+import { set_title } from '@/tools'
+
 export default {
-    name: 'login'
+    name: 'login',
+    mounted: function () {
+        set_title('登入', this.$route.query.VNK)  
+    }
 }
 </script>
 

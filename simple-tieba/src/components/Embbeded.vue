@@ -1,7 +1,8 @@
 <template>
     <div class="embbeded" v-show="show">
         <template v-if="items.length > 0">
-            <floor-in-floor v-for="(item, index) in items" :data="item" :key="index">
+            <floor-in-floor v-for="(item, index) in items" :data="item"    
+                            :key="index" v-on:reply="reply_to">
             </floor-in-floor>
             <div :class="['expander',{'loading':expand_loading}]"
                  v-if="remaining > 0" v-on:click="expand()">
@@ -93,6 +94,9 @@ export default {
                 this.expand_loading = false
                 this.page_current += 1
             })()
+        },
+        reply_to: function (author, text) {
+            this.$emit('reply-to', author, text)
         }
     }
 }

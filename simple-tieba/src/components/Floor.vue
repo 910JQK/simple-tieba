@@ -20,7 +20,7 @@
         <div class="wrapper md-subheading" ref="wrapper">
         </div>
         <div class="button-wrapper">
-            <a class="reply_button md-subheading" href="javascript:void(0)"
+            <a class="reply-button md-subheading" href="javascript:void(0)"
                 v-if="data.number != 1" v-on:click="reply()">
                 回复
             </a>
@@ -28,7 +28,8 @@
         <template v-if="data.pid != null">
             <embbeded :pid="data.pid" :kz="data.kz"
                       :show="data.reply > 0 || e_force_show" :key="e_key"
-                      v-on:reply-ready="set_ready()">
+                      v-on:reply-ready="set_ready()"
+                      v-on:reply-to="reply_to">
             </embbeded>
         </template>
     </div>
@@ -89,6 +90,16 @@ export default {
             window.sub_reply_info = {
                 text: this.data.content.textContent,
                 author: this.data.author,
+                callback: this.reload_embbeded.bind(this)
+            }
+            let { pid, kz } = this.data
+            router.push({ name: 'new-sub-reply', query: {pid, kz} })
+        },
+        reply_to: function (author, text) {
+            if (!this.reply_ready) { return }
+            window.sub_reply_info = {
+                text, author,
+                fill: `@${author} `,
                 callback: this.reload_embbeded.bind(this)
             }
             let { pid, kz } = this.data
@@ -158,7 +169,7 @@ li:first-child > .floor {
     height: 1.5rem;
     margin-bottom: 1rem;
 }
-.reply_button {
+.reply-button {
     position: absolute !important;
     right: 0rem;
     bottom: 0rem;

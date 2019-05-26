@@ -39,6 +39,9 @@ export default {
         this.text = truncate(window.sub_reply_info.text, 60)
         this.author = window.sub_reply_info.author
         this.callback = window.sub_reply_info.callback
+        if (window.sub_reply_info.fill) {
+            this.content = window.sub_reply_info.fill
+        }
         set_title(`回复给：${this.author}`, this.$route.query.VNK)
     },
     data: () => ({

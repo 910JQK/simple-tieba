@@ -66,8 +66,11 @@ function submit (info, data_override, success, callback) {
         let document = parse(text)
         let t = document.querySelector('span.light')
         if (router.currentRoute.query.VNK == VNK) {
-            let f = callback(Boolean(t && t.textContent == success))
-            info.go_back(f)
+            let ok = Boolean(t && t.textContent == success)
+            let f = callback(ok)
+            if (ok) {
+                info.go_back(f)
+            }
         }
     })()
 }
