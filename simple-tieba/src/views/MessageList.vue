@@ -9,7 +9,8 @@
             <md-progress-spinner md-mode="indeterminate" />
         </div>
         <div class="message-list-content" v-else>
-            <message-item v-for="(item, i) in list" :item="item" :key="i">
+            <message-item v-for="(item, i) in list" :item="item"
+                            :key="tab + String(i)">
             </message-item>
         </div>
     </div>
