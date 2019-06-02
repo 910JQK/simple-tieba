@@ -26,7 +26,6 @@
 
 
 <script>
-import 'whatwg-fetch'
 import { parse, set_title, on_scroll } from '@/tools'
 import { extract_submit_info } from '@/submit'
 import router from '@/router'
@@ -53,6 +52,7 @@ let thread_mapper = t => {
 export default {
     name: 'thread-list',
     mounted: function () {
+        let VNK = this.$route.query.VNK
         this.kw = this.$route.params.kw
         this.title = `${this.kw} 吧`
         set_title(this.title, this.$route.query.VNK)
@@ -61,6 +61,7 @@ export default {
             let kw_url = `https://tieba.baidu.com/mo/m?kw=${kw}`
             let res = await fetch(kw_url)
             let text = await res.text()
+            if (router.currentRoute.query.VNK != VNK) { return }
             let document = parse(text)
             if (document.querySelector('div.i') == null) {
                 alert(`该贴吧不存在`)
@@ -170,8 +171,8 @@ export default {
 .item {
     margin: 1em calc(50% - 50vw);
     padding: 1em 1em 1em 0em;
-    border: 1px solid hsl(0, 0%, 75%);
-    box-shadow: 0px 0px 5px hsla(0, 0%, 40%, 0.5);
+    border: 1px solid hsl(0, 0%, 75%, 0.9);
+    box-shadow: 0px 0px 5px hsla(0, 0%, 40%, 0.3);
     display: flex;
     align-items: center;
     overflow: hidden;

@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import 'whatwg-fetch'
 import { parse, set_title, on_scroll, normalize_content } from '@/tools'
 import { extract_submit_info } from '@/submit'
+import router from '@/router'
 import Floor from '@/components/Floor'
 import Loading from '@/assets/img-loading.gif'
 
@@ -86,6 +86,7 @@ export default {
         set_title(this.title)
     },
     mounted: function () {
+        let VNK = this.$route.query.VNK
         set_title('帖子内容')
         ;(async () => {
             this.kz = this.$route.params.kz
@@ -93,6 +94,7 @@ export default {
             let kz_url = `https://tieba.baidu.com/mo/m?kz=${kz}`
             let res = await fetch(kz_url)
             let text = await res.text()
+            if (router.currentRoute.query.VNK != VNK) { return }
             let document = parse(text)
             extract_submit_info(document, kz_url)
             let title = document.querySelector('.bc > strong').textContent

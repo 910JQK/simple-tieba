@@ -2,10 +2,6 @@ import { encode_query, parse } from './tools'
 import router from './router'
 
 
-const FAKE_UA = (
-    'Mozilla/5.0 (Android 7.1.1; Mobile; rv:67.0) Gecko/67.0 Firefox/67.0'
-)
-
 let SubmitInfo = {}
 
 
@@ -17,6 +13,7 @@ function get_submit_info (key) {
 function extract_submit_info (document, referrer, key_) {
     let key = key_ || router.currentRoute.query.VNK
     let form = document.querySelector('form[method=post]')
+    if (!form) { alert('Failed to extract submit info'); return null; }
     let match = form.action.match(/mo\/([^\/]+)\//)
     let magic = match? match[1]: 'm'
     let url = `https://tieba.baidu.com/mo/${magic}/submit`
@@ -55,8 +52,7 @@ function submit (info, data_override, success, callback) {
         let res = await fetch(info.url, {
             method: 'POST',
             headers: new Headers({
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': FAKE_UA
+                'Content-Type': 'application/x-www-form-urlencoded'
             }),
             referrerPolicy: 'unsafe-url',
             referrer: info.referrer,

@@ -23,7 +23,6 @@
 </template>
 
 <script>
-import 'whatwg-fetch'
 import { parse, normalize_finf_content } from '@/tools'
 import { extract_submit_info } from '@/submit'
 import FloorInFloor from '@/components/FloorInFloor'

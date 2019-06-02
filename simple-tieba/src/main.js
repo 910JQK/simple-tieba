@@ -1,5 +1,9 @@
 import Vue from 'vue'
-import { MdApp, MdToolbar, MdContent, MdProgress, MdAvatar, MdIcon, MdDrawer, MdButton, MdList, MdSpeedDial, MdField } from 'vue-material/dist/components'
+import {
+    MdApp, MdToolbar, MdContent, MdProgress, MdAvatar,
+    MdIcon, MdDrawer, MdButton, MdList, MdSpeedDial, MdField,
+    MdCard
+} from 'vue-material/dist/components'
 
 import App from './App.vue'
 import router from './router'
@@ -12,7 +16,11 @@ import 'material-design-icons/iconfont/material-icons.css'
 
 Vue.config.productionTip = false
 Vue.use(Navigation, { router })
-;[MdApp, MdToolbar, MdContent, MdProgress, MdAvatar, MdIcon, MdDrawer, MdButton, MdList, MdSpeedDial, MdField].forEach(c => Vue.use(c))
+;[
+    MdApp, MdToolbar, MdContent, MdProgress, MdAvatar,
+    MdIcon, MdDrawer, MdButton, MdList, MdSpeedDial, MdField,
+    MdCard
+].forEach(c => Vue.use(c))
 
 
 var vm = new Vue({ router, render: h => h(App) })

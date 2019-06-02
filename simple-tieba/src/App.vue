@@ -27,15 +27,28 @@
 </template>
 
 <script>
+import 'whatwg-fetch'
 import router from './router'
 import Drawer from './components/Drawer'
 import { recover_title, save_scroll, restore_scroll } from './tools'
+import { swipe_init } from './swipe'
+
+function fix_scrollbar_style () {
+    for (let e of document.querySelectorAll('.md-scrollbar')) {
+        e.classList.remove('md-scrollbar')
+    }
+}
 
 export default {
     components: {
         Drawer
     },
     created: function () {
+        swipe_init(d => {
+            if (d == 'L') {
+                this.show_menu = false
+            }
+        })
         router.beforeEach((t, f, next) => {
             recover_title(t.query.VNK)
             save_scroll(f.query.VNK)
@@ -49,9 +62,15 @@ export default {
             // 然而组件是从缓存拿出的，render 不会触发组件的 lifecycle hooks,
             // 所以 scroll position 的恢复需要异步进行.
             if (window.requestAnimationFrame) {
-                requestAnimationFrame(() => restore_scroll(t.query.VNK))
+                requestAnimationFrame(() => {
+                    restore_scroll(t.query.VNK)
+                    fix_scrollbar_style()
+                })
             } else {
-                setTimeout(() => restore_scroll(t.query.VNK), 0)
+                setTimeout(() => {
+                    restore_scroll(t.query.VNK)
+                    fix_scrollbar_style()
+                }, 0)
             }
         })
     },

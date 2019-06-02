@@ -29,7 +29,7 @@ export default {
     methods: {
         enter_bar: function () {
             this.$emit('hide')
-            let kw = prompt('请输入要进入的帖吧')
+            let kw = prompt('请输入要进入的贴吧')
             if (kw == '') { return }
             kw = kw.split(' ')[0]
             router.push({ name: 'thread-list', params: {kw} })

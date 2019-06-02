@@ -2,8 +2,8 @@
     <div class="floor">
         <div class="header">
             <div class="header-left">
-                <md-avatar v-bind:class="{ 'md-avatar-icon': portrait == null }">
-                    <img v-if="portrait != null" :src="avatar_url" />
+                <md-avatar v-bind:class="{ 'md-avatar-icon': avatar_url == null }">
+                    <img v-if="avatar_url != null" :src="avatar_url" />
                     <template v-else>{{ data.author[0] }}</template>
                 </md-avatar>
                 <span class="header-info">
@@ -36,10 +36,9 @@
 </template>
 
 <script>
-import 'whatwg-fetch'
-import GBK from 'gbk.js'
 import Embbeded from '@/components/Embbeded'
 import { get_color } from '@/tools'
+import { get_avatar_url } from '@/avatar'
 import router from '@/router'
 
 export default {
@@ -51,29 +50,18 @@ export default {
     },
     created: function () {
         if (this.data.author) {
-            let username = GBK.URI.encodeURIComponent(this.data.author)
-            ;(async () => {
-                let res = await fetch(
-                    `https://tieba.baidu.com/i/sys/user_json?un=${username}`
-                )
-                let json = await res.json()
-                this.portrait = json.creator.portrait || null
-            })()
+            get_avatar_url(this.data.author, url => {
+                this.avatar_url = url
+            })
         }
     },
     data: () => ({
         portrait: null,
         e_key: Math.random(),
         e_force_show: false,
-        reply_ready: false
+        reply_ready: false,
+        avatar_url: null
     }),
-    computed: {
-        avatar_url: function () {
-            return (
-                `http://tb.himg.baidu.com/sys/portrait/item/${this.portrait}`
-            )
-        }
-    },
     methods: {
         get_color,
         reload_embbeded: function () {
@@ -111,7 +99,7 @@ export default {
 
 <style>
 .floor {
-    border-bottom: 1px solid hsl(0, 0%, 75%);
+    border-bottom: 1px solid hsla(0, 0%, 75%, 0.8);
     padding: 1.5rem 0px 0.5rem 0px;
 }
 li:first-child > .floor {
