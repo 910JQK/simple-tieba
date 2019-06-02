@@ -9,15 +9,12 @@
     <div class="home-content" v-else-if="signed_in === true">
         <div class="home-top">
             <div class="signed-in-user">
-                <md-avatar :class="{ 'md-avatar-icon': avatar_url == null }">
-                    <img v-if="avatar_url != null" :src="avatar_url" />
-                    <template v-else>{{ user }}</template>
-                </md-avatar>
+                <avatar :user="user"></avatar>
                 <div class="md-title">
                     {{ user }}
                 </div>
             </div>
-            <div>
+            <div v-on:click="goto_messages()">
                 <md-badge :md-content="reply + at" v-if="reply + at > 0">
                     <md-button class="md-icon-button">
                         <md-icon>notifications</md-icon>
@@ -39,14 +36,14 @@
 
 <script>
 import { set_title, parse } from '@/tools'
-import { get_avatar_url } from '@/avatar'
 import router from '@/router'
+import Avatar from '@/components/Avatar'
 import BarCard from '@/components/BarCard'
 
 export default {
     name: 'home',
     components: {
-        BarCard
+        Avatar, BarCard
     },
     mounted: function () {
         set_title('极简贴吧', this.$route.query.VNK)
@@ -55,7 +52,6 @@ export default {
     data: () => ({
         signed_in: null,
         user: null,
-        avatar_url: null,
         reply: 0,
         at: 0,
         fav: [],
@@ -79,7 +75,6 @@ export default {
                 }
                 let user = link.textContent.replace(/的i贴吧$/, '')
                 this.user = user
-                get_avatar_url(user, url => { this.avatar_url = url })
                 this.fetch_favourite()
                 let msg_area = document.querySelector('div.bc.h')
                 let [reply, at] = Array.from(msg_area.querySelectorAll('a'))
@@ -114,6 +109,9 @@ export default {
         },
         goto_kw: function (kw) {
             router.push({ name: 'thread-list', params: {kw} })
+        },
+        goto_messages: function () {
+            router.push({ name: 'message-list' })
         }
     }
 }
@@ -144,7 +142,7 @@ export default {
 }
 .signed-in-user > * {
     margin: 0px 1rem 0px 0px !important;
-    border-radius: initial !important;
+    border-radius: 5px !important;
 }
 .fav-list {
     display: flex;

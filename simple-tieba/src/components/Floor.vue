@@ -2,10 +2,7 @@
     <div class="floor">
         <div class="header">
             <div class="header-left">
-                <md-avatar v-bind:class="{ 'md-avatar-icon': avatar_url == null }">
-                    <img v-if="avatar_url != null" :src="avatar_url" />
-                    <template v-else>{{ data.author[0] }}</template>
-                </md-avatar>
+                <avatar :user="data.author"></avatar>
                 <span class="header-info">
                     <span class="author" :style="{ color: get_color(data.author) }">
                         {{ data.author }}
@@ -36,31 +33,23 @@
 </template>
 
 <script>
+import Avatar from '@/components/Avatar'
 import Embbeded from '@/components/Embbeded'
 import { get_color } from '@/tools'
-import { get_avatar_url } from '@/avatar'
 import router from '@/router'
 
 export default {
     name: 'floor',
     props: ['data'],
-    components: { Embbeded },
+    components: { Avatar, Embbeded },
     mounted: function () {
         this.$refs.wrapper.appendChild(this.data.content)
-    },
-    created: function () {
-        if (this.data.author) {
-            get_avatar_url(this.data.author, url => {
-                this.avatar_url = url
-            })
-        }
     },
     data: () => ({
         portrait: null,
         e_key: Math.random(),
         e_force_show: false,
-        reply_ready: false,
-        avatar_url: null
+        reply_ready: false
     }),
     methods: {
         get_color,

@@ -4,6 +4,7 @@ import Home from './views/Home.vue'
 import Thread from './views/Thread.vue'
 import ThreadList from './views/ThreadList.vue'
 import Login from './views/Login.vue'
+import MessageList from './views/MessageList.vue'
 import NewThread from './views/NewThread.vue'
 import NewReply from './views/NewReply.vue'
 import NewSubReply from './views/NewSubReply.vue'
@@ -32,6 +33,11 @@ let router = new Router({
             path: '/login',
             name: 'login',
             component: Login
+        },
+        {
+            path: '/message-list',
+            name: 'message-list',
+            component: MessageList
         },
         {
             path: '/new-thread',

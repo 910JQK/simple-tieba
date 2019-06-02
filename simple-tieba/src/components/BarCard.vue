@@ -1,9 +1,8 @@
 <template>
-    <a class="bar-card" href="javascript:void(0)" v-on:click="$emit('click')">
+    <a class="bar-card" v-on:click="$emit('click')">
         <div class="bar-card-left">
             <md-avatar :class="{ 'md-avatar-icon': avatar_url == null }">
-                <img class="ba_img" v-if="avatar_url != null"
-                    :src="avatar_url" />
+                <img v-if="avatar_url != null" :src="avatar_url" />
                 <template v-else>{{ bar.name }}</template>
             </md-avatar>
         </div>
@@ -53,10 +52,6 @@ export default {
 }
 .bar-card-left > * {
     border-radius: 3px !important;
-}
-.ba_img {
-    width: 40px;
-    height: 40px;
 }
 .bar-card-right {
     overflow: hidden;

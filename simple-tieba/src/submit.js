@@ -13,7 +13,10 @@ function get_submit_info (key) {
 function extract_submit_info (document, referrer, key_) {
     let key = key_ || router.currentRoute.query.VNK
     let form = document.querySelector('form[method=post]')
-    if (!form) { alert('Failed to extract submit info'); return null; }
+    if (!form) {
+        console.log('Failed to extract submit info', referrer)
+        return null
+    }
     let match = form.action.match(/mo\/([^\/]+)\//)
     let magic = match? match[1]: 'm'
     let url = `https://tieba.baidu.com/mo/${magic}/submit`
