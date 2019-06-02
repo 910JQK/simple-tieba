@@ -6,6 +6,7 @@ import Loading from '@/assets/img-loading.gif'
 var Title = {}   // Map<VNK, page_title>
 var Scroll = {}   // Map<VNK, scroll_top>
 var ScrollCallback = null   // null | Function
+window.GlobalTemp = { Title, Scroll }
 
 
 /**
@@ -96,7 +97,7 @@ function save_scroll (key) {
  *  @param key VNK
  */
 function restore_scroll (key) {
-    if (Scroll[key]) {
+    if (typeof Scroll[key] != 'undefined') {
         let view = window.document.querySelector('.md-app-scroller')
         if (view != null) {
             view.scrollTop = Scroll[key]

@@ -33,17 +33,17 @@ function handleTouchMove(evt) {
     var xUp = evt.touches[0].clientX;                                    
     var yUp = evt.touches[0].clientY;
 
-    var xDiff = xDown - xUp;
-    var yDiff = yDown - yUp;
+    var xDiff = xUp - xDown;
+    var yDiff = yUp - yDown;
 
-    if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {/*most significant*/
-        if ( xDiff > 50 ) {
+    if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {
+        if ( xDiff > 100 ) {
             callback('R')
         } else {
             callback('L')
         }                       
     } else {
-        if ( yDiff > 50 ) {
+        if ( yDiff > 100 ) {
             callback('D')
         } else { 
             callback('U')

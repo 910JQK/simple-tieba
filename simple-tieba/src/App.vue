@@ -27,7 +27,6 @@
 </template>
 
 <script>
-import 'whatwg-fetch'
 import router from './router'
 import Drawer from './components/Drawer'
 import { recover_title, save_scroll, restore_scroll } from './tools'
