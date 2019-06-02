@@ -18,18 +18,20 @@
                 </div>
             </div>
             <div>
-                <md-badge md-content="reply + at" md-dense>
+                <md-badge :md-content="reply + at" v-if="reply + at > 0">
                     <md-button class="md-icon-button">
-                    <md-icon>notifications</md-icon>
+                        <md-icon>notifications</md-icon>
                     </md-button>
                 </md-badge>
+                <md-button class="md-icon-button" v-else>
+                    <md-icon>notifications</md-icon>
+                </md-button>
             </div>
         </div>
         <div class="fav-list" v-if="fav.length > 0">
-            <a class="fav" href="javascript:void(0)" v-for="bar in fav">
-                <div class="md-title">{{ bar.name }}</div>
-                <div class="md-subhead">{{ bar.level }} 级</div>
-            </a>
+            <bar-card v-for="(bar, i) in fav" :bar="bar" :key="i"
+                        v-on:click="goto_kw(bar.name)">
+            </bar-card>
         </div>
     </div>
   </div>
@@ -38,9 +40,14 @@
 <script>
 import { set_title, parse } from '@/tools'
 import { get_avatar_url } from '@/avatar'
+import router from '@/router'
+import BarCard from '@/components/BarCard'
 
 export default {
     name: 'home',
+    components: {
+        BarCard
+    },
     mounted: function () {
         set_title('极简贴吧', this.$route.query.VNK)
         this.init()
@@ -104,6 +111,9 @@ export default {
                 this.fav = fav
                 this.signed_in = true
             })()
+        },
+        goto_kw: function (kw) {
+            router.push({ name: 'thread-list', params: {kw} })
         }
     }
 }
@@ -142,26 +152,9 @@ export default {
     flex-wrap: wrap;
     padding: 0.4rem 0px;
 }
-.fav {
-    border: 1px solid hsla(0, 0%, 75%, 0.8);
-    box-shadow: 1px 1px 5px hsla(0, 0%, 40%, 0.3);
-    padding: 0.5rem 1rem;
-    margin: 0.5rem 0px;
+.bar-card {
     flex-grow: 0;
     flex-shrink: 0;
     flex-basis: 43vw;
-    overflow: hidden;
-    color: initial !important;
-}
-.fav:hover, .fav:hover > * {
-    text-decoration: none !important;
-}
-.fav:active {
-    background-color: hsla(0, 0%, 85%, 0.8);
-}
-.fav > div {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 </style>
