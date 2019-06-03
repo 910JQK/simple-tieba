@@ -2,7 +2,7 @@ import Vue from 'vue'
 import {
     MdApp, MdToolbar, MdContent, MdProgress, MdAvatar,
     MdIcon, MdDrawer, MdButton, MdList, MdSpeedDial, MdField,
-    MdCard, MdBadge, MdTabs
+    MdCard, MdBadge, MdTabs, MdSnackbar
 } from 'vue-material/dist/components'
 
 import App from './App.vue'
@@ -19,7 +19,7 @@ Vue.use(Navigation, { router })
 ;[
     MdApp, MdToolbar, MdContent, MdProgress, MdAvatar,
     MdIcon, MdDrawer, MdButton, MdList, MdSpeedDial, MdField,
-    MdCard, MdBadge, MdTabs
+    MdCard, MdBadge, MdTabs, MdSnackbar
 ].forEach(c => Vue.use(c))
 
 

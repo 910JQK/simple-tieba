@@ -21,6 +21,10 @@
             <img :src="Loading" />
         </div>
     </div>
+    <md-snackbar md-position="center" :md-duration="1500"
+                :md-active.sync="snackbar_visible">
+      <span>{{ snackbar_content }}</span>
+    </md-snackbar>
   </div>
 </template>
 
@@ -68,6 +72,25 @@ export default {
                 router.back()
             }
             extract_submit_info(document, kw_url)
+            ;(async () => {
+                await new Promise(r => { setTimeout(() => { r() }, 0) })
+                let t = document.querySelector('table + table')
+                let a = Array.from(t.querySelectorAll('a'))
+                let u = a[a.length-1]
+                if (u.textContent == '签到') {
+                    let q = u.href.match(/\/mo\/(.+)$/)[1]
+                    let l = `https://tieba.baidu.com/mo/${q}`
+                    let res = await fetch(l)
+                    let text = await res.text()
+                    let d = parse(text)
+                    let s = d.querySelector('span.light')
+                    if (s && s.textContent.match(/^签到成功/)) {
+                        this.show_snackbar('自动签到成功')
+                    } else {
+                        this.show_snackbar('自动签到*失败*')
+                    }
+                }
+            })()
             let pnum_input = document.querySelector('input[name=pnum]')
             if (pnum_input != null) {
                 this.page_total = Number(pnum_input.value)
@@ -85,6 +108,8 @@ export default {
         page_current: 1,
         next_loading: false,
         shown_kz: {},
+        snackbar_visible: false,
+        snackbar_content: '',
         Loading
     }),
     computed: {
@@ -147,6 +172,10 @@ export default {
                 kw: this.kw,
                 VNK: this.$route.query.VNK
             }
+        },
+        show_snackbar: function (content) {
+            this.snackbar_content = content
+            this.snackbar_visible = true
         }
     }
 }

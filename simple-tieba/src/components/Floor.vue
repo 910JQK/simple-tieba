@@ -88,7 +88,7 @@ export default {
 
 <style>
 .floor {
-    border-bottom: 1px solid hsla(0, 0%, 75%, 0.8);
+    border-bottom: 1px solid hsla(0, 0%, 80%, 0.4);
     padding: 1.5rem 0px 0.5rem 0px;
 }
 li:first-child > .floor {
