@@ -151,6 +151,11 @@ function display_image (net_url) {
         let blob = await res.blob()
         let url = URL.createObjectURL(blob)
         img.src = url
+        img.onclick = ev => {
+            if (typeof PhotoViewer != 'undefined') {
+                PhotoViewer.show(net_url, net_url)
+            }
+        }
         div.classList.remove('loading')
     })()
     return div
