@@ -45,6 +45,16 @@ export default {
     components: {
         Avatar, BarCard
     },
+    beforeRouteEnter: function (t, f, next) {
+        next(vm => {
+            if (f.name == 'login') {
+                router.replace({
+                    name: 'home',
+                    query: { t: Math.random() }
+                })
+            }
+        })
+    },
     mounted: function () {
         set_title('极简贴吧', this.$route.query.VNK)
         this.init()
