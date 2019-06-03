@@ -2,11 +2,34 @@
     <div id="app">
         <md-app md-waterfall md-mode="fixed">
             <md-app-toolbar class="md-primary">
-                <md-button class="md-icon-button"
-                           v-on:click="show_menu = !show_menu">
-                    <md-icon>menu</md-icon>
-                </md-button>
-                <span class="md-title" id="title"></span>
+                <div class="md-toolbar-row" style="overflow: hidden;">
+                    <div class="md-toolbar-section-start"
+                            style="overflow: hidden; flex-grow: 1;">
+                        <md-button class="md-icon-button"
+                            v-on:click="show_menu = !show_menu">
+                            <md-icon>menu</md-icon>
+                        </md-button>
+                        <span class="md-title" id="title"></span>
+                    </div>
+                    <div class="md-toolbar-section-end"
+                            style="flex-shrink: 0; flex-grow: 0;"
+                            v-show="side_menu_visible">
+                        <md-menu md-size="medium" md-align-trigger
+                                :mdCloseOnSelect="true">
+                            <md-button md-menu-trigger class="md-icon-button">
+                                <md-icon>more_vert</md-icon>
+                            </md-button>
+                            <md-menu-content>
+                                <md-menu-item v-on:click="open_in_browser()">
+                                    用浏览器打开
+                                </md-menu-item>
+                                <md-menu-item v-on:click="refresh()">
+                                    刷新
+                                </md-menu-item>
+                            </md-menu-content>
+                        </md-menu>
+                    </div>
+                </div>
             </md-app-toolbar>
             <md-app-drawer :md-active.sync="show_menu">
                 <drawer v-on:hide="show_menu = false"></drawer>
@@ -53,6 +76,7 @@ export default {
             recover_title(t.query.VNK)
             save_scroll(f.query.VNK)
             this.update_sd(t)
+            this.show_menu = false
             next()
         })
         router.afterEach((t, f) => {
@@ -72,6 +96,11 @@ export default {
                     fix_scrollbar_style()
                 }, 0)
             }
+            if (t.name == 'thread-list' || t.name == 'thread') {
+                this.side_menu_visible = true
+            } else {
+                this.side_menu_visible = false
+            }
         })
     },
     mounted: function () {
@@ -79,7 +108,8 @@ export default {
     },
     data: () => ({
         show_menu: false,
-        sd_type: 'none'
+        sd_type: 'none',
+        side_menu_visible: false
     }),
     methods: {
         dial: function () {
@@ -99,6 +129,38 @@ export default {
                 this.sd_type = 'reply'
             } else {
                 this.sd_type = 'none'
+            }
+        },
+        open_in_browser: function () {
+            let r = router.currentRoute
+            if (r.name == 'thread-list') {
+                let kw = encodeURIComponent(r.params.kw)
+                let url = `https://tieba.baidu.com/f?kw=${kw}`
+                console.log(url)
+                cordova.InAppBrowser.open(url, '_system', 'location=yes')
+            } else if (r.name == 'thread') {
+                let kz = r.params.kz
+                let url = `https://tieba.baidu.com/p/${kz}`
+                console.log(url)
+                cordova.InAppBrowser.open(url, '_system', 'location=yes')
+            }
+        },
+        refresh: function () {
+            let r = router.currentRoute
+            if (r.name == 'thread-list') {
+                let kw = r.params.kw
+                router.replace({
+                    name: 'thread-list',
+                    params: { kw },
+                    query: { t: Math.random() }
+                })
+            } else if (r.name == 'thread') {
+                let kz = r.params.kz
+                router.replace({
+                    name: 'thread',
+                    params: { kz },
+                    query: { t: Math.random() }
+                })
             }
         }
     }
