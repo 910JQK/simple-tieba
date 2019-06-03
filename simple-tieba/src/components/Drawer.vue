@@ -16,7 +16,11 @@
             </md-list-item>
             <md-list-item v-on:click="logout">
                 <md-icon>exit_to_app</md-icon>
-                <span class="md-list-item-text">登出</span>
+                <span class="md-list-item-text">注销</span>
+            </md-list-item>
+            <md-list-item v-on:click="about">
+                <md-icon>info</md-icon>
+                <span class="md-list-item-text">关于</span>
             </md-list-item>
         </md-list>
     </div>
@@ -78,6 +82,16 @@ export default {
                     }
                 }
             })()
+        },
+        about: function () {
+            this.$emit('hide')
+            alert(
+                `本程序为 Android 开发实验程序，不做任何担保，`
+                + `使用者因使用本程序造成的损失开发者概不负责。`
+                + `使用本程序发出的回复容易被*度删除，假如帖子频繁被删，`
+                + `请使用右上角菜单中的「用浏览器打开」功能，`
+                + `在浏览器中进行回帖。`
+            )
         }
     }
 }

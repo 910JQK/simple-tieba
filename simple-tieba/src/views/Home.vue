@@ -3,8 +3,12 @@
     <div class="spinner-wrapper" v-if="signed_in === null">
         <md-progress-spinner md-mode="indeterminate" />
     </div>
-    <div class="home-content" v-else-if="signed_in === false">
-        <h1>未登入</h1>
+    <div class="home-content empty" v-else-if="signed_in === false">
+        <md-empty-state
+            md-icon="info_outline"
+            md-label="尚未登入"
+            md-description="请打开左侧菜单并选择「登入」，登入成功后再按返回键返回此页面，或选择「进吧」，不登入单纯看帖。">
+        </md-empty-state>
     </div>
     <div class="home-content" v-else-if="signed_in === true">
         <div class="home-top">
@@ -128,7 +132,7 @@ export default {
 </script>
 
 <style>
-.spinner-wrapper {
+.spinner-wrapper, .home-content.empty {
     position: absolute;
     left: 0;
     right: 0;
