@@ -15,7 +15,8 @@
   "dependencies": {
     "com-sarriaroman-photoviewer": "^1.2.2",
     "cordova-android": "^8.0.0",
-    "cordova-browser": "^6.0.0"
+    "cordova-browser": "^6.0.0",
+    "cordova-plugin-inappbrowser": "^3.0.0"
   },
   "devDependencies": {
     "cordova-plugin-whitelist": "^1.3.3"
@@ -23,7 +24,8 @@
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "com-sarriaroman-photoviewer": {}
+      "com-sarriaroman-photoviewer": {},
+      "cordova-plugin-inappbrowser": {}
     },
     "platforms": [
       "browser",
