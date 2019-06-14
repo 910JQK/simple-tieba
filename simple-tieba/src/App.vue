@@ -11,6 +11,13 @@
                         </md-button>
                         <span class="md-title" id="title"></span>
                     </div>
+                    <div class="md-toolbar-section-end md-subheading"
+                            v-show="finish_btn_visible">
+                        <span class="finish_btn"
+                                v-on:click="finish()">
+                            完成
+                        </span>
+                    </div>
                     <div class="md-toolbar-section-end"
                             style="flex-shrink: 0; flex-grow: 0;"
                             v-show="side_menu_visible">
@@ -100,6 +107,11 @@ export default {
             } else {
                 this.side_menu_visible = false
             }
+            if (t.name == 'login') {
+                this.finish_btn_visible = true
+            } else {
+                this.finish_btn_visible = false
+            }
         })
     },
     mounted: function () {
@@ -108,7 +120,8 @@ export default {
     data: () => ({
         show_menu: false,
         sd_type: 'none',
-        side_menu_visible: false
+        side_menu_visible: false,
+        finish_btn_visible: false
     }),
     methods: {
         dial: function () {
@@ -161,6 +174,9 @@ export default {
                     query: { t: Math.random() }
                 })
             }
+        },
+        finish: function () {
+            router.back()
         }
     }
 }
@@ -178,5 +194,9 @@ export default {
 }
 * {
     user-select: text;
+}
+.finish_btn {
+    padding: 0px 0.8rem;
+    cursor: pointer;
 }
 </style>
