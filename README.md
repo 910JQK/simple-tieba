@@ -9,6 +9,7 @@ $ cd simple-tieba
 $ yarn build
 $ cd ..
 $ cordova platform add android
+$ ( 请添加 android:usesCleartextTraffic="true" 到 platforms/android/app/src/main/AndroidManifest.xml 的 <application> )
 $ cordova run android
 ```
 
