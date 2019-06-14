@@ -10,13 +10,28 @@ window.GlobalTemp = { Title, Scroll }
 
 
 /**
- *  Parse XML WAP page
+ *  Parse XML WAP page (or HTML page as fallback)
  *  
  *  @param xml_text String
  *  @return Document
  */
-function parse (xml_text) {
-    return (new DOMParser()).parseFromString(xml_text, 'application/xml')
+function parse (xml_text, type = 'application/xml') {
+    return (new DOMParser()).parseFromString(xml_text, type)
+}
+
+
+/**
+ *  Get data document from fallback thread list (PC Version)
+ * 
+ *  @param raw Document
+ *  @return Document
+ */
+function get_real_document (raw) {
+    let d = raw.getElementById('pagelet_html_frs-list/pagelet/thread_list')
+    let html = d.innerHTML
+    let extracted = html.trim().replace(/^<!--|-->$/g, '')
+    let document = parse(extracted, 'text/html')
+    return document
 }
 
 
@@ -360,7 +375,7 @@ function confirm (dirty) {
 
 
 export {
-    parse, encode_query, truncate,
+    parse, get_real_document, encode_query, truncate,
     set_title, recover_title,
     save_scroll, restore_scroll, on_scroll,
     normalize_content, normalize_finf_content, get_color,

@@ -30,7 +30,7 @@
 
 
 <script>
-import { parse, set_title, on_scroll } from '@/tools'
+import { parse, set_title, on_scroll, get_real_document } from '@/tools'
 import { extract_submit_info } from '@/submit'
 import router from '@/router'
 import Loading from '@/assets/img-loading.gif'
@@ -52,6 +52,18 @@ let thread_mapper = t => {
     return { kz, title, flags, author, date, reply }
 }
 
+let thread_mapper_fallback = t => {
+    let title = t.querySelector('.threadlist_title').textContent.trim()
+    let data = JSON.parse(t.dataset.field)
+    let kz = data.id
+    let author = data.author_name
+    let reply = data.reply_num
+    let flags = [data.is_good && '精', data.is_top && '顶'].filter(x => x)
+    let date_element = t.querySelector('.threadlist_reply_date')
+    let date = (date_element != null)? date_element.textContent: ''
+    return { kz, title, flags, author, date, reply }
+}
+
 
 export default {
     name: 'thread-list',
@@ -67,14 +79,16 @@ export default {
             let text = await res.text()
             if (router.currentRoute.query.VNK != VNK) { return }
             let document = parse(text)
-            if (document.querySelector('div.i') == null) {
+            if (document.querySelector('form[method=post]') == null) {
                 alert(`该贴吧不存在`)
                 router.back()
             }
+            this.use_fallback = (document.querySelector('div.i') == null)
             extract_submit_info(document, kw_url)
             ;(async () => {
                 await new Promise(r => { setTimeout(() => { r() }, 0) })
                 let t = document.querySelector('table + table')
+                if (t == null) { return }
                 let a = Array.from(t.querySelectorAll('a'))
                 let u = a[a.length-1]
                 if (u.textContent == '签到') {
@@ -95,10 +109,27 @@ export default {
             if (pnum_input != null) {
                 this.page_total = Number(pnum_input.value)
             }
-            let threads = Array.from(document.querySelectorAll('div.i'))
-            this.threads = threads.map(thread_mapper)
+            let success_msg = `已加载 ${this.kw}吧 帖子列表 / 第 1 页`
+            if (!this.use_fallback) {
+                let threads = Array.from(document.querySelectorAll('div.i'))
+                this.threads = threads.map(thread_mapper)
+                console.log(success_msg)
+            } else {
+                ;(async () => {
+                    let res = await fetch (
+                        `https://tieba.baidu.com/f?kw=${kw}`
+                    )
+                    let text = await res.text()
+                    let document = parse(text, 'text/html')
+                    document = get_real_document(document)
+                    let threads = Array.from (
+                        document.querySelectorAll('.j_thread_list')
+                    )
+                    this.threads = threads.map(thread_mapper_fallback)
+                    console.log(success_msg)
+                })()
+            }
             this.update_target()
-            console.log(`已加载 ${this.kw}吧 帖子列表 / 第 1 页`)
         })()
     },
     data: () => ({
@@ -110,6 +141,7 @@ export default {
         shown_kz: {},
         snackbar_visible: false,
         snackbar_content: '',
+        use_fallback: false,
         Loading
     }),
     computed: {
@@ -140,9 +172,9 @@ export default {
             }
         },
         load_next: function () {
-            ;(async () => {
-                let kw = encodeURIComponent(this.kw)
-                let pnum = this.page_current + 1
+            let kw = encodeURIComponent(this.kw)
+            let pnum = this.page_current + 1
+            let normal = async () => {
                 let res = await fetch (
                     `https://tieba.baidu.com/mo/m?kw=${kw}&pnum=${pnum}`
                 )
@@ -154,6 +186,7 @@ export default {
                     let match = a.href.match(/kz=([0-9]+)/)
                     let kz = match? match[1]: ''
                     if (!this.shown_kz[kz]) {
+                        // side effect
                         this.shown_kz[kz] = true
                         return true
                     } else {
@@ -161,11 +194,43 @@ export default {
                     }
                 })
                 let delta = threads.map(thread_mapper)
+                return delta
+            }
+            let fallback = async () => {
+                let pn = (pnum-1)*50
+                let res = await fetch (
+                    `https://tieba.baidu.com/f?kw=${kw}&pn=${pn}`
+                )
+                let text = await res.text()
+                let document = parse(text, 'text/html')
+                document = get_real_document(document)
+                let threads = Array.from (
+                    document.querySelectorAll('.j_thread_list')
+                )
+                let raw_delta = threads.map(thread_mapper_fallback)
+                let delta = raw_delta.filter(t => {
+                    let kz = t.kz
+                    if (!this.shown_kz[kz]) {
+                        // side effect
+                        this.shown_kz[kz] = true
+                        return true
+                    } else {
+                        return false
+                    }
+                })
+                return delta
+            }
+            let fill = (delta) => {
                 this.threads = [...this.threads, ...delta]
                 this.page_current = pnum
                 this.next_loading = false
                 console.log(`已加载 ${this.kw}吧 帖子列表 / 第 ${pnum} 页`)
-            })()
+            }
+            if (!this.use_fallback) {
+                normal().then(delta => fill(delta))
+            } else {
+                fallback().then(delta => fill(delta))
+            }
         },
         update_target: function () {
             window.target_info = {

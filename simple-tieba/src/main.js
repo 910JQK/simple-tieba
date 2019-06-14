@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import 'whatwg-fetch'
 import {
     MdApp, MdToolbar, MdContent, MdProgress, MdAvatar,
     MdIcon, MdDrawer, MdButton, MdList, MdSpeedDial, MdField,
